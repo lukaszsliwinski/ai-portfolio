@@ -74,13 +74,11 @@ app/
   globals.css
 
 components/
+  navigation/
+  landing/
   chat/
-    ChatHero.tsx
-    ChatWindow.tsx
-    ChatMessage.tsx
-    ChatInput.tsx
-    SuggestedQuestions.tsx
-    AssistantAvatar.tsx
+  projects/
+  footer/
   ui/
     ...
 
