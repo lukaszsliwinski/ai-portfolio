@@ -345,7 +345,6 @@ What is your main frontend stack?
 What kind of projects have you built?
 What are your strongest skills?
 How would you summarize your experience?
-What do you enjoy working on?
 ```
 
 The UI should be polished but not overloaded.

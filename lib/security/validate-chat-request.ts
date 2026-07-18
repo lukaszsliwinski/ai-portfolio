@@ -1,5 +1,5 @@
 export interface ChatMessage {
-  role: "user" | "assistant" | "system";
+  role: "user" | "assistant";
   content: string;
 }
 
@@ -14,7 +14,7 @@ interface ValidationResult {
 
 const MAX_MESSAGE_LENGTH = 800;
 const MAX_CONVERSATION_LENGTH = 10;
-const ALLOWED_ROLES = ["user", "assistant", "system"];
+const ALLOWED_ROLES = ["user", "assistant"];
 
 /**
  * Validates the structure and content limits of an incoming chat request.

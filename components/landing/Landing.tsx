@@ -1,4 +1,5 @@
-import { faCode } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faLaptopCode } from "@fortawesome/free-solid-svg-icons";
+import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
 import FaWrapper from "@/components/ui/FaWrapper";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -7,7 +8,7 @@ import ButtonAnchor from "@/components/ui/ButtonAnchor";
 export default function Landing() {
   return (
     <section className="relative w-full py-24 flex flex-col items-center justify-center overflow-hidden">
-       <div className="w-full max-w-6xl px-4 flex items-center justify-between gap-12">
+       <div className="w-full max-w-6xl px-4 flex items-center justify-between gap-20">
         
         <div className="flex-1 flex flex-col gap-6 max-w-xl">
           <h1 className="text-4xl font-extrabold text-zinc-50 leading-tight">
@@ -56,8 +57,8 @@ export default function Landing() {
         <div className="flex-1 flex flex-col items-center justify-center gap-10 max-w-xl">
           <Image src="/images/main.png" alt="bio photo" width={250} height={250} />
           <div className="flex flex-wrap gap-2">
-            <ButtonAnchor href="#" label="Ask a question" />
-            <ButtonAnchor href="#" label="Explore projects" />
+            <ButtonAnchor href="#chat" label="Ask a question" icon={faGithubAlt} />
+            <ButtonAnchor href="#" label="Go to projects" icon={faLaptopCode} />
           </div>
         </div>
 

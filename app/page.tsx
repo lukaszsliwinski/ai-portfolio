@@ -1,6 +1,6 @@
 import NavBar from "@/components/navigation/NavBar";
 import Landing from "@/components/landing/Landing";
-// import ChatWindow from "@/components/chat/ChatWindow";
+import ChatSection from "@/components/chat/ChatSection";
 import Footer from "@/components/footer/Footer";
 
 export default function Home() {
@@ -9,7 +9,7 @@ export default function Home() {
       <NavBar />
       <main className="flex-1 flex flex-col items-center justify-center w-full">
         <Landing />
-        {/* <ChatWindow /> */}
+        <ChatSection />
       </main>
       <Footer />
     </div>

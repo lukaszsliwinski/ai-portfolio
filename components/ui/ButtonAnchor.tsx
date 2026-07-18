@@ -13,10 +13,10 @@ export default function ButtonAnchor({ label, href, icon }: ButtonAnchorProps) {
     <Link
       href={href}
       key={label}
-      className="group flex items-center justify-between w-35 h-10 rounded-xl text-sm font-semibold transition-all duration-50 bg-zinc-900/40 hover:bg-zinc-900/80 text-zinc-300 hover:text-main border border-zinc-800/60 hover:border-zinc-800 active:opacity-90 cursor-pointer"
+      className="group flex items-center justify-center min-w-35 min-h-10 px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-50 bg-zinc-900/40 hover:bg-zinc-900/80 text-zinc-300 hover:text-main border border-zinc-800/60 hover:border-zinc-800 active:opacity-90 cursor-pointer"
     >
-      {icon && <FaWrapper icon={icon} size={16} className="mr-2" />}
-      <span className="mx-auto">{label}</span>
+      {icon && <FaWrapper icon={icon} size={16} className="mr-1.5 mb-px" />}
+      <span className="">{label}</span>
     </Link>
   );
 }
