@@ -6,20 +6,14 @@ import SuggestedQuestions from "./SuggestedQuestions";
 import type { Message } from "./ChatMessage";
 import { DEFAULT_WELCOME_MESSAGE } from "@/app/api/chat/mocks";
 
-// Maximum messages sent to the API (must match validate-chat-request.ts)
+// Must match MAX_CONVERSATION_LENGTH in validate-chat-request.ts
 const MAX_API_MESSAGES = 10;
 
 const createWelcomeMessages = (): Message[] => [
-  {
-    ...DEFAULT_WELCOME_MESSAGE,
-    timestamp: new Date(),
-  },
+  { ...DEFAULT_WELCOME_MESSAGE, timestamp: new Date() },
 ];
 
-const createMessage = (
-  role: Message["role"],
-  content: string
-): Message => ({
+const createMessage = (role: Message["role"], content: string): Message => ({
   id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
   role,
   content,
@@ -27,9 +21,7 @@ const createMessage = (
 });
 
 export default function ChatSection() {
-  const [messages, setMessages] = useState<Message[]>(
-    createWelcomeMessages
-  );
+  const [messages, setMessages] = useState<Message[]>(createWelcomeMessages);
   const [isThinking, setIsThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,15 +29,13 @@ export default function ChatSection() {
     const message = content.trim();
     if (!message || isThinking) return;
 
-    // Optimistically add the user message and clear any previous error
+    // Optimistically add the user message and clear previous error
     const userMessage = createMessage("user", message);
     setMessages((prev) => [...prev, userMessage]);
     setIsThinking(true);
     setError(null);
 
-    // Build the conversation history to send to the API.
-    // Skip the initial welcome message (role: assistant, id: "welcome-msg")
-    // and cap at MAX_API_MESSAGES entries.
+    // Build history: exclude welcome message, cap at API limit
     const history = [...messages, userMessage]
       .filter((m) => m.id !== "welcome-msg")
       .slice(-MAX_API_MESSAGES)
@@ -58,24 +48,40 @@ export default function ChatSection() {
         body: JSON.stringify({ messages: history }),
       });
 
-      const data = await response.json();
-
+      // Non-2xx responses are JSON errors (validation, 503, etc.)
       if (!response.ok) {
-        // Server returned a structured error (validation, 503, etc.)
-        const errorMessage =
-          data?.error ?? `Request failed with status ${response.status}.`;
-        setError(errorMessage);
-      } else {
-        const assistantContent: string =
-          data?.message?.content ?? "I received your message but couldn't form a response.";
+        const data = await response.json();
+        setError(data?.error ?? `Request failed with status ${response.status}.`);
+        return;
+      }
 
-        setMessages((prev) => [
-          ...prev,
-          createMessage("assistant", assistantContent),
-        ]);
+      if (!response.body) {
+        setError("Received an empty response from the server.");
+        return;
+      }
+
+      // Add an empty assistant message and stream content into it
+      const assistantMessage = createMessage("assistant", "");
+      setIsThinking(false);
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMessage.id
+              ? { ...m, content: m.content + chunk }
+              : m
+          )
+        );
       }
     } catch {
-      // Network error or JSON parse failure
       setError("Could not reach the assistant. Please check your connection and try again.");
     } finally {
       setIsThinking(false);
@@ -105,7 +111,6 @@ export default function ChatSection() {
         </div>
 
         <div className="flex-1 flex flex-col items-start justify-center max-w-xl gap-6 w-full">
-          
           <h1 className="text-4xl font-extrabold text-zinc-50 leading-tight">
             Lorem Ipsum<br />
             <small className="tracking-widest">consectetur <span className="text-main">adipisci</span></small>

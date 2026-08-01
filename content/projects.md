@@ -1,3 +1,4 @@
+<!-- PLACEHOLDER: Replace with your real projects before publishing. -->
 # Completed Projects
 
 ## E-Commerce Platform Redesign

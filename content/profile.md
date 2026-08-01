@@ -1,3 +1,4 @@
+<!-- PLACEHOLDER: Replace with your real profile content before publishing. -->
 # Professional Profile
 
 I am a passionate and results-driven Frontend Developer specializing in building high-performance, visually stunning, and highly interactive web applications. My primary stack includes React, Next.js, TypeScript, and Tailwind CSS. 

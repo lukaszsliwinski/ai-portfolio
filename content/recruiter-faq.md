@@ -1,3 +1,4 @@
+<!-- PLACEHOLDER: Replace with your real FAQ answers before publishing. -->
 # Recruiter FAQ (Frequently Asked Questions)
 
 ## What is your availability?

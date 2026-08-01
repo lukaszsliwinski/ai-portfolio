@@ -1,3 +1,4 @@
+<!-- PLACEHOLDER: Replace with your real experience before publishing. -->
 # Professional Experience
 
 ## Senior Frontend Engineer | TechSolutions Inc.

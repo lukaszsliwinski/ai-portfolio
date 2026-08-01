@@ -1,3 +1,4 @@
+<!-- PLACEHOLDER: Replace with your real interests before publishing. -->
 # Professional & Personal Interests
 
 ## Professional Interests

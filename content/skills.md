@@ -1,3 +1,4 @@
+<!-- PLACEHOLDER: Replace with your real skills before publishing. -->
 # Developer Skills
 
 ## Core Frontend Technologies

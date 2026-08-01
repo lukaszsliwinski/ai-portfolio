@@ -1,23 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { validateChatRequest } from "@/lib/security/validate-chat-request";
-import { getMockAnswer } from "./mocks";
+import { loadKnowledge } from "@/lib/knowledge/load-knowledge";
+import { formatKnowledge } from "@/lib/knowledge/format-knowledge";
+import { getSystemPrompt } from "@/lib/ai/system-prompt";
+import { streamChat } from "@/lib/ai/provider";
 
 /**
  * POST /api/chat
  *
- * Accepts a chat request, validates it, and returns a mock assistant response.
- * Real LLM provider integration is deferred to the next implementation step.
+ * Validates the request, builds the knowledge-grounded system prompt,
+ * and streams the Gemini response token by token.
  *
- * Response shape is designed to be forward-compatible with streaming:
- *   { message: { role: "assistant", content: string } }
+ * Success response: text/plain stream (UTF-8 chunks)
+ * Error responses:  application/json { error: string }
  *
- * Future streaming path will replace the JSON response with a ReadableStream
- * (e.g. using the Vercel AI SDK or a manual SSE stream). The client can
- * detect streaming by checking the Content-Type header for "text/event-stream".
+ * The client distinguishes errors from streams by checking response.ok
+ * before attempting to read the body as a stream.
  */
 export async function POST(request: NextRequest) {
-  // 1. Check if chat is enabled via environment variable (defaults to true)
+  // 1. Feature flag
   const chatEnabled = process.env.CHAT_ENABLED !== "false";
   if (!chatEnabled) {
     return NextResponse.json(
@@ -26,18 +28,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // 2. API key guard — fail fast before any expensive work
+  if (!process.env.GEMINI_API_KEY) {
+    return NextResponse.json(
+      { error: "LLM provider is not configured. Please contact the site owner." },
+      { status: 503 }
+    );
+  }
+
   try {
-    // 2. Read headers (async in Next.js App Router)
+    // 3. Read client IP (used for rate limiting in a later step)
     const headersList = await headers();
     const clientIp =
       headersList.get("x-forwarded-for")?.split(",")[0].trim() ||
       headersList.get("x-real-ip") ||
       "unknown";
-
-    // Suppress unused-variable warning — IP will be used for rate limiting in a later step
     void clientIp;
 
-    // 3. Parse request body
+    // 4. Parse request body
     let body: unknown;
     try {
       body = await request.json();
@@ -48,31 +56,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. Validate structure and limits
+    // 5. Validate structure and limits
     const validation = validateChatRequest(body);
     if (!validation.isValid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    // 5. Extract conversation — safe to cast after validation
-    const { messages } = body as { messages: Array<{ role: string; content: string }> };
+    const { messages } = body as {
+      messages: Array<{ role: string; content: string }>;
+    };
 
-    // Retrieve the last user message for the mock answer
-    const lastUserMessage =
-      [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+    // 6. Build knowledge-grounded system prompt
+    const knowledge = await loadKnowledge();
+    const systemPrompt = getSystemPrompt(formatKnowledge(knowledge));
 
-    // 6. Return mock assistant response
-    //    This will be replaced by a real LLM call in the next implementation step.
-    const content = getMockAnswer(lastUserMessage);
+    // 7. Assemble full message list: [system, ...conversationHistory]
+    const llmMessages = [{ role: "system", content: systemPrompt }, ...messages];
 
-    return NextResponse.json({
-      message: {
-        role: "assistant",
-        content,
-      },
+    // 8. Stream response from Gemini
+    const stream = streamChat(llmMessages);
+
+    return new Response(stream, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   } catch (error: unknown) {
     const message =
