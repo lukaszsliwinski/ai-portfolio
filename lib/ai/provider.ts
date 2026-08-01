@@ -10,7 +10,7 @@ import { GoogleGenAI } from "@google/genai";
  *   [{ role: "system", content: "..." }, { role: "user", content: "..." }, ...]
  */
 
-const MODEL = process.env.LLM_MODEL ?? "gemini-2.0-flash";
+const MODEL = process.env.LLM_MODEL ?? "gemini-3.1-flash-lite";
 
 type LLMMessage = { role: string; content: string };
 

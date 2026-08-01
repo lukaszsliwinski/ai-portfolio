@@ -1,12 +1,12 @@
 {
   "_note": "PLACEHOLDER: Replace all values with real data before publishing.",
-  "displayName": "Alex Kowalski",
-  "role": "Senior Frontend Developer",
-  "location": "Warsaw, Poland",
+  "displayName": "Łukasz Śliwiński",
+  "role": "Frontend Developer",
+  "location": "Katowice, Poland",
   "mainStack": ["React", "Next.js", "TypeScript", "Tailwind CSS"],
-  "languages": ["Polish (Native)", "English (Fluent, C1)"],
+  "languages": ["Polish (Native)", "English (B2)"],
   "contact": {
-    "email": "alex.kowalski.dev@example.com",
+    "email": "lukaszsliwinski0@gmail.com",
     "github": "https://github.com/example-dev",
     "linkedin": "https://linkedin.com/in/example-dev"
   }

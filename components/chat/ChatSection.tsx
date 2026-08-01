@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ChatWindow from "./ChatWindow";
 import SuggestedQuestions from "./SuggestedQuestions";
 import type { Message } from "./ChatMessage";
@@ -25,9 +25,12 @@ export default function ChatSection() {
   const [isThinking, setIsThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const isSendingRef = useRef(false);
+
   const handleSendMessage = async (content: string) => {
     const message = content.trim();
-    if (!message || isThinking) return;
+    if (!message || isThinking || isSendingRef.current) return;
+    isSendingRef.current = true;
 
     // Optimistically add the user message and clear previous error
     const userMessage = createMessage("user", message);
@@ -85,12 +88,14 @@ export default function ChatSection() {
       setError("Could not reach the assistant. Please check your connection and try again.");
     } finally {
       setIsThinking(false);
+      isSendingRef.current = false;
     }
   };
 
   const handleClearChat = () => {
     setMessages(createWelcomeMessages());
     setIsThinking(false);
+    isSendingRef.current = false;
     setError(null);
   };
 

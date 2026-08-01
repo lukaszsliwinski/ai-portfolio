@@ -27,8 +27,8 @@ export function ChatInput({
 
     if (!message || isDisabled) return;
 
-    onSendMessage(message);
     setValue("");
+    onSendMessage(message);
   };
 
   // Auto-resize the textarea based on content
@@ -80,7 +80,7 @@ export function ChatInput({
           maxLength={MAX_QUESTION_LENGTH}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey && !e.repeat) {
               e.preventDefault();
               submit();
             }
