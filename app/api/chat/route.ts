@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { validateChatRequest } from "@/lib/security/validate-chat-request";
-import { loadKnowledge } from "@/lib/knowledge/load-knowledge";
-import { formatKnowledge } from "@/lib/knowledge/format-knowledge";
-import { getSystemPrompt } from "@/lib/ai/system-prompt";
+import { getMockAnswer } from "./mocks";
 
+/**
+ * POST /api/chat
+ *
+ * Accepts a chat request, validates it, and returns a mock assistant response.
+ * Real LLM provider integration is deferred to the next implementation step.
+ *
+ * Response shape is designed to be forward-compatible with streaming:
+ *   { message: { role: "assistant", content: string } }
+ *
+ * Future streaming path will replace the JSON response with a ReadableStream
+ * (e.g. using the Vercel AI SDK or a manual SSE stream). The client can
+ * detect streaming by checking the Content-Type header for "text/event-stream".
+ */
 export async function POST(request: NextRequest) {
-  // 1. Check if chat is enabled
+  // 1. Check if chat is enabled via environment variable (defaults to true)
   const chatEnabled = process.env.CHAT_ENABLED !== "false";
   if (!chatEnabled) {
     return NextResponse.json(
@@ -16,14 +27,29 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // 2. Read headers asynchronously (required in Next.js 16)
+    // 2. Read headers (async in Next.js App Router)
     const headersList = await headers();
-    const clientIp = headersList.get("x-forwarded-for") || "unknown";
+    const clientIp =
+      headersList.get("x-forwarded-for")?.split(",")[0].trim() ||
+      headersList.get("x-real-ip") ||
+      "unknown";
 
-    // 3. Parse and validate request body
-    const body = await request.json();
+    // Suppress unused-variable warning — IP will be used for rate limiting in a later step
+    void clientIp;
+
+    // 3. Parse request body
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body." },
+        { status: 400 }
+      );
+    }
+
+    // 4. Validate structure and limits
     const validation = validateChatRequest(body);
-
     if (!validation.isValid) {
       return NextResponse.json(
         { error: validation.error },
@@ -31,46 +57,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. Load and format knowledge base
-    const knowledgeData = await loadKnowledge();
-    const formattedKnowledge = formatKnowledge(knowledgeData);
+    // 5. Extract conversation — safe to cast after validation
+    const { messages } = body as { messages: Array<{ role: string; content: string }> };
 
-    // 5. Build system prompt (for validation/debug purposes in this step)
-    const systemPrompt = getSystemPrompt(formattedKnowledge);
+    // Retrieve the last user message for the mock answer
+    const lastUserMessage =
+      [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
 
-    // 6. Return a mock response indicating success (LLM integration is in the next step)
-    const userMessages = body.messages.filter((m: any) => m.role === "user");
-    const lastUserMessage = userMessages[userMessages.length - 1]?.content || "";
-
-    const mockResponseText = `Hi! I'm speaking on behalf of ${knowledgeData.meta.displayName}.
-This is a placeholder response because the LLM provider integration is scheduled for the next step. 
-
-However, I can confirm that:
-1. Your request was successfully validated.
-2. Your message was: "${lastUserMessage}"
-3. The server successfully loaded the local knowledge files from the filesystem.
-4. The generated system prompt contains ${systemPrompt.length} characters of developer context.
-5. Your IP address detected from headers: ${clientIp}
-
-Let me know if you would like me to proceed to the next implementation phase!`;
+    // 6. Return mock assistant response
+    //    This will be replaced by a real LLM call in the next implementation step.
+    const content = getMockAnswer(lastUserMessage);
 
     return NextResponse.json({
       message: {
         role: "assistant",
-        content: mockResponseText,
+        content,
       },
-      debug: {
-        ip: clientIp,
-        knowledgeLoaded: true,
-        displayName: knowledgeData.meta.displayName,
-      }
     });
-
-  } catch (error: any) {
-    console.error("Error in chat route handler:", error);
-    return NextResponse.json(
-      { error: error.message || "An unexpected error occurred." },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "An unexpected error occurred.";
+    console.error("[/api/chat] Unhandled error:", error);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

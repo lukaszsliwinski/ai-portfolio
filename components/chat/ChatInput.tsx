@@ -10,7 +10,8 @@ interface ChatInputProps {
   isDisabled?: boolean;
 }
 
-const MAX_QUESTION_LENGTH = 400;
+// Must match MAX_MESSAGE_LENGTH in lib/security/validate-chat-request.ts
+const MAX_QUESTION_LENGTH = 800;
 
 export function ChatInput({
   onSendMessage,

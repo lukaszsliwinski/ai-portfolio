@@ -4,10 +4,10 @@ import { useState } from "react";
 import ChatWindow from "./ChatWindow";
 import SuggestedQuestions from "./SuggestedQuestions";
 import type { Message } from "./ChatMessage";
-import {
-  DEFAULT_WELCOME_MESSAGE,
-  getMockAnswer,
-} from "@/app/api/chat/mocks";
+import { DEFAULT_WELCOME_MESSAGE } from "@/app/api/chat/mocks";
+
+// Maximum messages sent to the API (must match validate-chat-request.ts)
+const MAX_API_MESSAGES = 10;
 
 const createWelcomeMessages = (): Message[] => [
   {
@@ -20,7 +20,7 @@ const createMessage = (
   role: Message["role"],
   content: string
 ): Message => ({
-  id: `${role}-${Date.now()}`,
+  id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
   role,
   content,
   timestamp: new Date(),
@@ -31,40 +31,66 @@ export default function ChatSection() {
     createWelcomeMessages
   );
   const [isThinking, setIsThinking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = async (content: string) => {
     const message = content.trim();
-
     if (!message || isThinking) return;
 
+    // Optimistically add the user message and clear any previous error
+    const userMessage = createMessage("user", message);
+    setMessages((prev) => [...prev, userMessage]);
     setIsThinking(true);
+    setError(null);
 
-    setMessages((prev) => [
-      ...prev,
-      createMessage("user", message),
-    ]);
+    // Build the conversation history to send to the API.
+    // Skip the initial welcome message (role: assistant, id: "welcome-msg")
+    // and cap at MAX_API_MESSAGES entries.
+    const history = [...messages, userMessage]
+      .filter((m) => m.id !== "welcome-msg")
+      .slice(-MAX_API_MESSAGES)
+      .map(({ role, content }) => ({ role, content }));
 
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        createMessage(
-          "assistant",
-          getMockAnswer(message)
-        ),
-      ]);
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }),
+      });
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Server returned a structured error (validation, 503, etc.)
+        const errorMessage =
+          data?.error ?? `Request failed with status ${response.status}.`;
+        setError(errorMessage);
+      } else {
+        const assistantContent: string =
+          data?.message?.content ?? "I received your message but couldn't form a response.";
+
+        setMessages((prev) => [
+          ...prev,
+          createMessage("assistant", assistantContent),
+        ]);
+      }
+    } catch {
+      // Network error or JSON parse failure
+      setError("Could not reach the assistant. Please check your connection and try again.");
+    } finally {
       setIsThinking(false);
-    }, 1200);
+    }
   };
 
   const handleClearChat = () => {
     setMessages(createWelcomeMessages());
     setIsThinking(false);
+    setError(null);
   };
 
   return (
     <section
-      className="relative w-full py-24 flex flex-col items-center justify-center overflow-hidden"
+      className="relative w-full min-h-screen py-24 flex flex-col items-center justify-center overflow-hidden"
       id="chat"
     >
       <div className="w-full max-w-6xl px-4 flex items-center justify-between gap-20">
@@ -72,6 +98,7 @@ export default function ChatSection() {
           <ChatWindow
             messages={messages}
             isThinking={isThinking}
+            error={error}
             onSendMessage={handleSendMessage}
             onClearChat={handleClearChat}
           />

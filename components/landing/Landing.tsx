@@ -7,7 +7,7 @@ import ButtonAnchor from "@/components/ui/ButtonAnchor";
 
 export default function Landing() {
   return (
-    <section className="relative w-full py-24 flex flex-col items-center justify-center overflow-hidden">
+    <section className="relative w-full min-h-screen py-24 flex flex-col items-center justify-center overflow-hidden">
        <div className="w-full max-w-6xl px-4 flex items-center justify-between gap-20">
         
         <div className="flex-1 flex flex-col gap-6 max-w-xl">
