@@ -4,6 +4,7 @@ import FaWrapper from "@/components/ui/FaWrapper";
 
 interface SuggestedQuestionsProps {
   onSelectQuestion: (question: string) => void;
+  isDisabled?: boolean;
   className?: string;
 }
 
@@ -11,11 +12,12 @@ const QUESTIONS = [
   "What is your main frontend stack?",
   "What kind of projects have you built?",
   "What are your strongest skills?",
-  "How would you summarize your experience?"
+  "How would you summarize your experience?",
 ];
 
 export default function SuggestedQuestions({
   onSelectQuestion,
+  isDisabled = false,
   className,
 }: SuggestedQuestionsProps) {
   return (
@@ -28,11 +30,14 @@ export default function SuggestedQuestions({
         {QUESTIONS.map((question, idx) => (
           <button
             key={idx}
+            disabled={isDisabled}
             onClick={() => onSelectQuestion(question)}
             className="group flex items-center justify-between text-left px-4 py-2 rounded-xl text-[13px] font-medium leading-relaxed transition-all duration-200
               bg-zinc-900/40 hover:bg-zinc-900/80 text-zinc-300 border border-zinc-800/60 hover:border-zinc-800 hover:text-main
-              active:opacity-90 focus:outline-none cursor-pointer"
-          >{question}
+              active:opacity-90 focus:outline-none cursor-pointer
+              disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-zinc-300 disabled:hover:border-zinc-800/60"
+          >
+            {question}
           </button>
         ))}
       </div>

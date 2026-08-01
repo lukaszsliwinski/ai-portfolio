@@ -63,6 +63,7 @@ export function ChatInput({
         type="button"
         onClick={onClearChat}
         title="Clear Conversation"
+        aria-label="Clear conversation history"
         className="w-10 h-10 rounded-full flex justify-center items-center border shrink-0 transition-all
           bg-zinc-900 border-zinc-800 text-zinc-400
           hover:text-zinc-100 hover:bg-zinc-850
@@ -78,6 +79,7 @@ export function ChatInput({
           rows={1}
           disabled={isDisabled}
           maxLength={MAX_QUESTION_LENGTH}
+          aria-label="Ask a question"
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey && !e.repeat) {
@@ -104,6 +106,7 @@ export function ChatInput({
       <button
         type="submit"
         disabled={isDisabled || !value.trim()}
+        aria-label="Send message"
         className="w-10 h-10 rounded-full flex justify-center items-center shrink-0 transition-all
           bg-zinc-100 text-zinc-950
           hover:bg-zinc-300 active:opacity-90 cursor-pointer

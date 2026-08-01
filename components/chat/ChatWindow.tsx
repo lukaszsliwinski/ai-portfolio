@@ -42,6 +42,7 @@ export default function ChatWindow({
 
       <div
         ref={scrollRef}
+        aria-live="polite"
         className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-6 scroll-smooth scrollbar-minimal"
       >
         {messages.map((message) => (
