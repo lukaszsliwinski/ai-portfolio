@@ -6,6 +6,7 @@ import { loadKnowledge } from "@/lib/knowledge/load-knowledge";
 import { formatKnowledge } from "@/lib/knowledge/format-knowledge";
 import { getSystemPrompt } from "@/lib/ai/system-prompt";
 import { streamChat } from "@/lib/ai/provider";
+import { logChatMessage, logErrorEvent } from "@/lib/logging/log-chat";
 
 /** Formats seconds into human-readable hours and minutes rounded up. */
 function formatWaitTime(totalSeconds: number): string {
@@ -48,6 +49,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const headersList = await headers();
+    const clientIp =
+      headersList.get("x-forwarded-for")?.split(",")[0].trim() ||
+      headersList.get("x-real-ip") ||
+      "127.0.0.1";
 
     // 3. Same-Origin Guard (Security E): block cross-origin browser requests
     const origin = headersList.get("origin");
@@ -56,6 +61,7 @@ export async function POST(request: NextRequest) {
       try {
         const originHost = new URL(origin).host;
         if (originHost !== host) {
+          logErrorEvent({ ip: clientIp, type: "forbidden", error: "Cross-origin request blocked" });
           return NextResponse.json(
             { error: "Forbidden: Cross-origin requests are not allowed." },
             { status: 403 }
@@ -66,19 +72,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 4. Rate Limiting per IP
-    const clientIp =
-      headersList.get("x-forwarded-for")?.split(",")[0].trim() ||
-      headersList.get("x-real-ip") ||
-      "127.0.0.1";
-
     const rateLimit = checkRateLimit(clientIp);
     if (!rateLimit.success) {
       const waitTimeText = formatWaitTime(rateLimit.resetSeconds);
+      const errMsg = `Message limit reached for your IP address. Please wait ${waitTimeText} before sending another message.`;
+      logErrorEvent({ ip: clientIp, type: "rate_limited", error: errMsg });
       return NextResponse.json(
-        {
-          error: `Message limit reached for your IP address. Please wait ${waitTimeText} before sending another message.`,
-        },
+        { error: errMsg },
         {
           status: 429,
           headers: {
@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
     try {
       body = await request.json();
     } catch {
+      logErrorEvent({ ip: clientIp, type: "bad_request", error: "Invalid JSON in request body" });
       return NextResponse.json(
         { error: "Invalid JSON in request body." },
         { status: 400 }
@@ -102,6 +103,7 @@ export async function POST(request: NextRequest) {
     // 6. Validate structure and limits
     const validation = validateChatRequest(body);
     if (!validation.isValid) {
+      logErrorEvent({ ip: clientIp, type: "bad_request", error: validation.error || "Validation failed" });
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
@@ -109,14 +111,20 @@ export async function POST(request: NextRequest) {
       messages: Array<{ role: string; content: string }>;
     };
 
-    // 7. Build knowledge-grounded system prompt
+    // 7. Log latest user message asynchronously in background
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === "user")?.content;
+    if (lastUserMsg) {
+      logChatMessage({ ip: clientIp, userMessage: lastUserMsg });
+    }
+
+    // 8. Build knowledge-grounded system prompt
     const knowledge = await loadKnowledge();
     const systemPrompt = getSystemPrompt(formatKnowledge(knowledge));
 
-    // 8. Assemble full message list: [system, ...conversationHistory]
+    // 9. Assemble full message list: [system, ...conversationHistory]
     const llmMessages = [{ role: "system", content: systemPrompt }, ...messages];
 
-    // 9. Stream response from Gemini
+    // 10. Stream response from Gemini
     const stream = streamChat(llmMessages);
 
     return new Response(stream, {
@@ -126,6 +134,7 @@ export async function POST(request: NextRequest) {
     const message =
       error instanceof Error ? error.message : "An unexpected error occurred.";
     console.error("[/api/chat] Unhandled error:", error);
+    logErrorEvent({ ip: "server", type: "api_error", error: message });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
