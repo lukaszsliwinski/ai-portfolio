@@ -4,7 +4,7 @@ services:
     container_name: rag
     restart: always
     env_file:
-      - .env.local
+      - .env
     environment:
       - NODE_ENV=${NODE_ENV}
       - PORT=${PORT}
