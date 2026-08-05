@@ -25,10 +25,7 @@ export default function Landing() {
               {["React", "Next.js", "TypeScript", "Tailwind CSS"].map((tech) => (
                 <div
                   key={tech}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-semibold select-none",
-                    "bg-main/10 text-main border border-main/20"
-                  )}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-semibold select-none bg-main/10 text-main border border-main/20"
                 >
                   <FaWrapper icon={faCode} size={14} />
                   <span>{tech}</span>
@@ -40,10 +37,7 @@ export default function Landing() {
               {["Python", "Machine Learning", "Deep Learning", "AI Web Dev"].map((tech) => (
                 <div
                   key={tech}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-semibold select-none",
-                    "bg-main/10 text-main border border-main/20"
-                  )}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-semibold select-none bg-main/10 text-main border border-main/20"
                 >
                   <FaWrapper icon={faCode} size={14} />
                   <span>{tech}</span>

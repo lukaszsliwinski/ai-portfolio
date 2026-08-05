@@ -2,7 +2,10 @@ import { GoogleGenAI } from "@google/genai";
 
 const MODEL = process.env.LLM_MODEL ?? "gemini-3.1-flash-lite";
 
-type LLMMessage = { role: string; content: string };
+interface LLMMessage {
+  role: string;
+  content: string;
+}
 
 /**
  * Sentinel prefix written into stream when Gemini API encounters an error.
