@@ -1,0 +1,30 @@
+services:
+  rag:
+    build: .
+    container_name: rag
+    restart: always
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+    volumes:
+      - ./logs:/app/logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rag.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.rag.entrypoints=websecure"
+      - "traefik.http.routers.rag.tls.certresolver=le"
+      - "traefik.http.services.rag.loadbalancer.server.port=${PORT}"
+      - "traefik.http.middlewares.rag-hsts.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.rag-hsts.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.rag-hsts.headers.stsPreload=true"
+      - "traefik.http.routers.rag.middlewares=rag-hsts@docker"
+    networks:
+      - web
+    expose:
+      - "${PORT}"
+
+networks:
+  web:
+    external: true
