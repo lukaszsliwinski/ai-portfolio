@@ -5,6 +5,7 @@ import ChatWindow from "./ChatWindow";
 import SuggestedQuestions from "./SuggestedQuestions";
 import type { Message } from "./ChatMessage";
 import { DEFAULT_WELCOME_MESSAGE } from "@/app/api/chat/mocks";
+import { STREAM_ERROR_PREFIX } from "@/lib/ai/provider";
 
 // Must match MAX_CONVERSATION_LENGTH in validate-chat-request.ts
 const MAX_API_MESSAGES = 10;
@@ -76,6 +77,14 @@ export default function ChatSection() {
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
+
+        if (chunk.includes(STREAM_ERROR_PREFIX)) {
+          const apiError = chunk.split(STREAM_ERROR_PREFIX)[1] || "The AI assistant encountered an error.";
+          setError(apiError);
+          setMessages((prev) => prev.filter((m) => m.id !== assistantMessage.id));
+          break;
+        }
+
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantMessage.id

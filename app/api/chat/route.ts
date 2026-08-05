@@ -1,22 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { validateChatRequest } from "@/lib/security/validate-chat-request";
+import { checkRateLimit } from "@/lib/security/rate-limit";
 import { loadKnowledge } from "@/lib/knowledge/load-knowledge";
 import { formatKnowledge } from "@/lib/knowledge/format-knowledge";
 import { getSystemPrompt } from "@/lib/ai/system-prompt";
 import { streamChat } from "@/lib/ai/provider";
 
+/** Formats seconds into human-readable hours and minutes rounded up. */
+function formatWaitTime(totalSeconds: number): string {
+  const totalMinutes = Math.max(1, Math.ceil(totalSeconds / 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours === 0) {
+    return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+  }
+  if (minutes === 0) {
+    return `${hours} ${hours === 1 ? "hour" : "hours"}`;
+  }
+  return `${hours} ${hours === 1 ? "hour" : "hours"} ${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+}
+
 /**
  * POST /api/chat
  *
- * Validates the request, builds the knowledge-grounded system prompt,
- * and streams the Gemini response token by token.
- *
- * Success response: text/plain stream (UTF-8 chunks)
- * Error responses:  application/json { error: string }
- *
- * The client distinguishes errors from streams by checking response.ok
- * before attempting to read the body as a stream.
+ * Validates request, checks Same-Origin & Rate Limits,
+ * constructs system prompt, and streams Gemini response.
  */
 export async function POST(request: NextRequest) {
   // 1. Feature flag
@@ -28,7 +38,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 2. API key guard — fail fast before any expensive work
+  // 2. API key guard — fail fast
   if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
       { error: "LLM provider is not configured. Please contact the site owner." },
@@ -37,15 +47,48 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // 3. Read client IP (used for rate limiting in a later step)
     const headersList = await headers();
+
+    // 3. Same-Origin Guard (Security E): block cross-origin browser requests
+    const origin = headersList.get("origin");
+    const host = headersList.get("host");
+    if (origin && host) {
+      try {
+        const originHost = new URL(origin).host;
+        if (originHost !== host) {
+          return NextResponse.json(
+            { error: "Forbidden: Cross-origin requests are not allowed." },
+            { status: 403 }
+          );
+        }
+      } catch {
+        // Ignore invalid origin format
+      }
+    }
+
+    // 4. Rate Limiting per IP
     const clientIp =
       headersList.get("x-forwarded-for")?.split(",")[0].trim() ||
       headersList.get("x-real-ip") ||
-      "unknown";
-    void clientIp;
+      "127.0.0.1";
 
-    // 4. Parse request body
+    const rateLimit = checkRateLimit(clientIp);
+    if (!rateLimit.success) {
+      const waitTimeText = formatWaitTime(rateLimit.resetSeconds);
+      return NextResponse.json(
+        {
+          error: `Message limit reached for your IP address. Please wait ${waitTimeText} before sending another message.`,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.resetSeconds),
+          },
+        }
+      );
+    }
+
+    // 5. Parse request body
     let body: unknown;
     try {
       body = await request.json();
@@ -56,7 +99,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Validate structure and limits
+    // 6. Validate structure and limits
     const validation = validateChatRequest(body);
     if (!validation.isValid) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
@@ -66,14 +109,14 @@ export async function POST(request: NextRequest) {
       messages: Array<{ role: string; content: string }>;
     };
 
-    // 6. Build knowledge-grounded system prompt
+    // 7. Build knowledge-grounded system prompt
     const knowledge = await loadKnowledge();
     const systemPrompt = getSystemPrompt(formatKnowledge(knowledge));
 
-    // 7. Assemble full message list: [system, ...conversationHistory]
+    // 8. Assemble full message list: [system, ...conversationHistory]
     const llmMessages = [{ role: "system", content: systemPrompt }, ...messages];
 
-    // 8. Stream response from Gemini
+    // 9. Stream response from Gemini
     const stream = streamChat(llmMessages);
 
     return new Response(stream, {
