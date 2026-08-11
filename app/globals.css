@@ -48,6 +48,11 @@ body {
   background-color: rgb(82 82 91);
 }
 
+#site-background {
+  background: linear-gradient(to bottom, #000000 0%, rgb(from var(--main) r g b / 6%) 50%);
+}
+
+
 /* AI Assistant Typing Bounce Animation (Tailwind v4) */
 @keyframes typing-bounce {
   0%, 100% {
