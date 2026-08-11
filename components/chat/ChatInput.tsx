@@ -57,7 +57,7 @@ export function ChatInput({
         e.preventDefault();
         submit();
       }}
-        className="flex items-center gap-2 bg-zinc-950"
+        className="flex items-center gap-2"
     >
       <button
         type="button"

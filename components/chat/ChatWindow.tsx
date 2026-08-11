@@ -32,7 +32,7 @@ export default function ChatWindow({
   }, [messages, isThinking, error]);
 
   return (
-    <div className="w-full max-w-2xl h-132 rounded-3xl border flex flex-col relative overflow-hidden shadow-none bg-zinc-950 border-zinc-800/80">
+    <div className="w-full max-w-2xl h-132 rounded-3xl border flex flex-col relative overflow-hidden shadow-none bg-zinc-950/75 border-zinc-800/80">
       <div className="px-5 py-4 border-b border-zinc-850 flex items-center gap-4 bg-zinc-900/10">
         <AssistantAvatar showStatus />
         <h3 className="font-semibold text-zinc-50 leading-none">

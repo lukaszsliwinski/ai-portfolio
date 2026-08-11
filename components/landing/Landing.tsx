@@ -1,7 +1,6 @@
 import { faCode, faLaptopCode } from "@fortawesome/free-solid-svg-icons";
 import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
 import FaWrapper from "@/components/ui/FaWrapper";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 import ButtonAnchor from "@/components/ui/ButtonAnchor";
 
@@ -52,7 +51,7 @@ export default function Landing() {
           <Image src="/images/main.png" alt="bio photo" width={250} height={250} />
           <div className="flex flex-wrap gap-2">
             <ButtonAnchor href="#chat" label="Ask a question" icon={faGithubAlt} />
-            <ButtonAnchor href="#" label="Go to projects" icon={faLaptopCode} />
+            <ButtonAnchor href="#projects" label="Go to projects" icon={faLaptopCode} />
           </div>
         </div>
 
