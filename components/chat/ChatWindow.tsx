@@ -32,18 +32,19 @@ export default function ChatWindow({
   }, [messages, isThinking, error]);
 
   return (
-    <div className="w-full max-w-2xl h-132 rounded-3xl border flex flex-col relative overflow-hidden shadow-none text-app-foreground bg-app-background/70 border-app-mid-dark">
+    <div className="scroll-mt-24 w-full max-w-2xl h-132 rounded-3xl border flex flex-col relative overflow-hidden shadow-none text-app-foreground bg-app-background/70 border-app-mid-dark" id="chat-window">
       <div className="px-5 py-4 border-b border-app-mid-dark flex items-center gap-4">
         <AssistantAvatar showStatus />
         <h3 className="font-semibold leading-none">
-          Portfolio AI Assistant
+          Portfolio Assistant
         </h3>
       </div>
 
+      {/* TODO: dobrze przeanalizować zachowanie klasy [overflow-anchor:none] */}
       <div
         ref={scrollRef}
         aria-live="polite"
-        className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-6 scroll-smooth scrollbar-minimal"
+        className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-6 scroll-smooth scrollbar-minimal [overflow-anchor:none]"
       >
         {messages.map((message) => (
           <ChatMessage

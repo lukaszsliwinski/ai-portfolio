@@ -1,11 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
+
 import ChatWindow from "./ChatWindow";
 import SuggestedQuestions from "./SuggestedQuestions";
 import type { Message } from "./ChatMessage";
+
+import SectionHeader from "@/components/ui/SectionHeader";
+import SectionParagraph from "@/components/ui/SectionParagraph";
+
 import { DEFAULT_WELCOME_MESSAGE } from "@/app/api/chat/mocks";
 import { STREAM_ERROR_PREFIX } from "@/lib/ai/provider";
+import { CHAT_TEXT } from "@/lib/constants";
 
 // Must match MAX_CONVERSATION_LENGTH in validate-chat-request.ts
 const MAX_API_MESSAGES = 10;
@@ -110,10 +116,10 @@ export default function ChatSection() {
 
   return (
     <section
-      className="relative w-full min-h-screen py-24 flex flex-col items-center justify-center overflow-hidden"
+      className="w-full min-h-screen py-24 flex flex-col items-center justify-center overflow-hidden"
       id="chat"
     >
-      <div className="w-full max-w-6xl px-4 flex items-center justify-between gap-20">
+      <div className="max-w-4xl xl:max-w-6xl flex max-lg:flex-col-reverse items-center justify-between gap-12 lg:gap-20">
         <div className="flex-1 flex flex-col items-center justify-center max-w-xl">
           <ChatWindow
             messages={messages}
@@ -124,22 +130,10 @@ export default function ChatSection() {
           />
         </div>
 
-        <div className="flex-1 flex flex-col items-start justify-center max-w-xl gap-6 w-full">
-          {/* TODO: jeśli się da to header do osobnego komponentu */}
-          <h1 className="text-4xl font-extrabold text-app-foreground leading-tight">
-            Lorem Ipsum<br />
-            <small className="tracking-widest">consectetur <span className="text-app-main">adipisci</span></small>
-          </h1>
-
-          {/* TODO: klasy leading-relaxed i text-justify dopisać globalnie do <p> */}
-          <p className="leading-relaxed text-justify mb-4">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letrasets Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. <b>!opis projektu tutaj, inf. o vibe coding użytym przy chacie! + Info: 10req / IP / 1hour</b>
-          </p>
-
-          <SuggestedQuestions
-            onSelectQuestion={handleSendMessage}
-            isDisabled={isThinking}
-          />
+        <div className="flex-1 flex flex-col max-w-xl gap-6 w-full">
+          <SectionHeader main="Portfolio Assistant" />
+          <SectionParagraph text={CHAT_TEXT} />
+          <SuggestedQuestions onSelectQuestion={handleSendMessage} />
         </div>
       </div>
     </section>

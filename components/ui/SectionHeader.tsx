@@ -9,7 +9,7 @@ interface SectionHeaderProps {
 
 export default function SectionHeader({ main, sub, subColored, small=false }: SectionHeaderProps) {
   return (
-    <h1 className={cn(small ? "text-2xl" : "text-3xl lg:text-4xl",
+    <h2 className={cn(small ? "text-2xl" : "text-3xl sm:text-4xl",
       "max-lg:text-center font-extrabold text-app-foreground leading-tight")}
     >
       {main}
@@ -19,6 +19,6 @@ export default function SectionHeader({ main, sub, subColored, small=false }: Se
           <small className="tracking-widest">{sub} <span className="text-app-main">{subColored}</span></small>
         </>
       )}
-    </h1>
+    </h2>
   );
 }

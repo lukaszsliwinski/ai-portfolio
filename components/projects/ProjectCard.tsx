@@ -1,6 +1,9 @@
 import Image from "next/image";
-import ButtonAnchor from "../ui/ButtonAnchor";
 import { faCode, faLink } from "@fortawesome/free-solid-svg-icons";
+
+import ButtonAnchor from "@/components/ui/ButtonAnchor";
+import SectionHeader from "@/components/ui/SectionHeader";
+import SectionParagraph from "@/components/ui/SectionParagraph";
 
 interface LaptopProps {
   screenSrc: string;
@@ -35,24 +38,18 @@ function Laptop({ screenSrc }: LaptopProps) {
 
 export default function ProjectCard({ name, description, codeLink, liveLink, screenSrc }: ProjectCardProps) {
   return (
-    <div className="grid grid-cols-5 max-w-5xl rounded-3xl border bg-app-background/70 border-app-mid-dark p-12 gap-20">
-      <div className="col-span-2">
+    <div className="w-full flex flex-col-reverse lg:grid lg:grid-cols-4 xl:grid-cols-5 max-w-xl lg:max-w-4xl xl:max-w-5xl rounded-3xl border bg-app-background/70 border-app-mid-dark px-5 py-8 sm:p-12 gap-6 lg:gap-20">
+      <div className="col-span-2 flex flex-col-reverse lg:flex-col justify-center gap-6 lg:gap-4">
         <Laptop screenSrc={screenSrc} />
-        <div className="flex justify-around mx-2 mt-5">
+        <div className="flex justify-center gap-6 xl:justify-around mx-2">
           <ButtonAnchor href={codeLink} label="Code" icon={faCode} />
           <ButtonAnchor href={liveLink} label="Link" icon={faLink} />
         </div>
-
       </div>
-      <div className="col-span-3 flex-1 flex flex-col items-start justify-center gap-6 w-full">
-        <h3 className="text-2xl font-extrabold text-app-foreground leading-tight">
-          {name}
-        </h3>
-
-        <p className="leading-relaxed text-justify mb-4">
-          {description}
-        </p>
-
+      
+      <div className="col-span-2 xl:col-span-3 flex flex-col gap-6">
+        <SectionHeader main={name} small={true} />
+        <SectionParagraph text={description} />
       </div>
     </div>
 

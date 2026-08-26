@@ -9,13 +9,13 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />
-      <main className="relative flex-1 flex flex-col items-center justify-center w-full">
+      <main className="relative flex-1 flex flex-col items-center justify-center w-full px-4">
         <Background />
         <Landing />
         <ChatSection />
         <Projects />
-        <Footer />
       </main>
+      <Footer />
     </div>
   );
 }
