@@ -125,13 +125,15 @@ export default function ChatSection() {
         </div>
 
         <div className="flex-1 flex flex-col items-start justify-center max-w-xl gap-6 w-full">
-          <h1 className="text-4xl font-extrabold text-zinc-50 leading-tight">
+          {/* TODO: jeśli się da to header do osobnego komponentu */}
+          <h1 className="text-4xl font-extrabold text-app-foreground leading-tight">
             Lorem Ipsum<br />
-            <small className="tracking-widest">consectetur <span className="text-main">adipisci</span></small>
+            <small className="tracking-widest">consectetur <span className="text-app-main">adipisci</span></small>
           </h1>
 
-          <p className="text-zinc-400 font-normal leading-relaxed text-justify mb-4">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letrasets Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. <b className="text-red-600">Info: 10req / IP / 1hour</b>
+          {/* TODO: klasy leading-relaxed i text-justify dopisać globalnie do <p> */}
+          <p className="leading-relaxed text-justify mb-4">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letrasets Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. <b>!opis projektu tutaj, inf. o vibe coding użytym przy chacie! + Info: 10req / IP / 1hour</b>
           </p>
 
           <SuggestedQuestions

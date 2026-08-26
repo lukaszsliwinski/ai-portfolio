@@ -10,6 +10,7 @@ interface ChatInputProps {
   isDisabled?: boolean;
 }
 
+// TODO: wszystko ujednolicić z .env (ma być jedno miejsce na tego typu dane) - jeśli nie ma przeciwskazań to może w constants.ts
 // Must match MAX_MESSAGE_LENGTH in lib/security/validate-chat-request.ts
 const MAX_QUESTION_LENGTH = 800;
 
@@ -65,8 +66,7 @@ export function ChatInput({
         title="Clear Conversation"
         aria-label="Clear conversation history"
         className="w-10 h-10 rounded-full flex justify-center items-center border shrink-0 transition-all
-          bg-zinc-900 border-zinc-800 text-zinc-400
-          hover:text-zinc-100 hover:bg-zinc-850
+          text-app-text hover:text-app-foreground bg-app-mid-dark/20 hover:bg-app-mid-dark/30 border-app-mid-dark
           active:opacity-90 focus:outline-none cursor-pointer"
       >
         <FaWrapper icon={faRotateLeft} size={16} />
@@ -93,12 +93,12 @@ export function ChatInput({
               : "Write a question..."
           }
           className="w-full max-h-21 min-h-11.5 overflow-y-auto resize-none scrollbar-minimal p-3 rounded-xl border text-sm font-medium
-            bg-zinc-900 border-zinc-800 text-zinc-100
-            placeholder-zinc-500 focus:border-main
-            disabled:bg-zinc-900/50 disabled:cursor-not-allowed"
+          bg-app-mid-dark/40 border-app-mid-dark
+          placeholder-app-text focus:ring-1 focus:ring-app-mid-light focus:outline-none
+          disabled:cursor-not-allowed"
         />
 
-        <span className="absolute right-3 bottom-2 text-[10px] font-semibold text-zinc-500 bg-zinc-900/80 px-1.5 py-0.5 rounded-lg">
+        <span className="absolute right-3 bottom-2 text-[10px] font-semibold text-app-text bg-app-mid-dark/10 px-1.5 py-0.5 rounded-lg">
           {count}/{MAX_QUESTION_LENGTH}
         </span>
       </div>
@@ -108,8 +108,8 @@ export function ChatInput({
         disabled={isDisabled || !value.trim()}
         aria-label="Send message"
         className="w-10 h-10 rounded-full flex justify-center items-center shrink-0 transition-all
-          bg-zinc-100 text-zinc-950
-          hover:bg-zinc-300 active:opacity-90 cursor-pointer
+          bg-app-foreground/90 text-app-background hover:opacity-80
+          active:opacity-90 cursor-pointer
           disabled:opacity-40 disabled:cursor-not-allowed"
       >
         <FaWrapper icon={faArrowUp} size={16} />

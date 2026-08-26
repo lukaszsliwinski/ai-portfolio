@@ -1,7 +1,7 @@
 import React from "react";
 import AssistantAvatar from "./AssistantAvatar";
 import { cn } from "@/lib/utils";
-
+// TODO: dokładniej przeanalizować
 export interface Message {
   id: string;
   role: "user" | "assistant";
@@ -22,16 +22,17 @@ function parseInlineFormatting(text: string): React.ReactNode[] {
   return parts.map((part, index) => {
     if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
       return (
-        <strong key={index} className="font-semibold text-zinc-100">
+        <strong key={index} className="font-semibold">
           {part.slice(2, -2)}
         </strong>
       );
     }
     if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
+      // TODO: czy <code> potrzebny jeśli chat powinien być zabezpieczony przed udzielaniem informacji innych niż w danych?
       return (
         <code
           key={index}
-          className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-200 font-mono text-[12px] border border-zinc-700/50"
+          className="px-1.5 py-0.5 rounded bg-app-mid-dark font-mono text-xs"
         >
           {part.slice(1, -1)}
         </code>
@@ -56,7 +57,7 @@ function FormattedContent({ content }: { content: string }) {
         if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
           return (
             <div key={lineIndex} className="flex items-start gap-2 pl-1">
-              <span className="text-zinc-500 select-none">•</span>
+              <span className="text-app-text select-none">•</span>
               <span>{parseInlineFormatting(trimmed.slice(2))}</span>
             </div>
           );
@@ -91,8 +92,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
           className={cn(
             "p-3.5 text-sm leading-relaxed shadow-sm font-normal wrap-break-words",
             isUser
-              ? "bg-main text-zinc-100 rounded-2xl rounded-tr-none"
-              : "bg-zinc-900 text-zinc-100 border border-zinc-800/80 rounded-2xl rounded-tl-none"
+              ? "bg-app-main rounded-2xl rounded-tr-none"
+              : "bg-app-mid-dark/40 border border-app-mid-dark rounded-2xl rounded-tl-none"
           )}
         >
           {isUser ? (

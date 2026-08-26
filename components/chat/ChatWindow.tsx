@@ -32,10 +32,10 @@ export default function ChatWindow({
   }, [messages, isThinking, error]);
 
   return (
-    <div className="w-full max-w-2xl h-132 rounded-3xl border flex flex-col relative overflow-hidden shadow-none bg-zinc-950/75 border-zinc-800/80">
-      <div className="px-5 py-4 border-b border-zinc-850 flex items-center gap-4 bg-zinc-900/10">
+    <div className="w-full max-w-2xl h-132 rounded-3xl border flex flex-col relative overflow-hidden shadow-none text-app-foreground bg-app-background/70 border-app-mid-dark">
+      <div className="px-5 py-4 border-b border-app-mid-dark flex items-center gap-4">
         <AssistantAvatar showStatus />
-        <h3 className="font-semibold text-zinc-50 leading-none">
+        <h3 className="font-semibold leading-none">
           Portfolio AI Assistant
         </h3>
       </div>
@@ -57,10 +57,10 @@ export default function ChatWindow({
           <div className="flex w-full items-end gap-3 px-1 animate-in fade-in duration-200">
             <AssistantAvatar />
 
-            <div className="p-3.5 rounded-2xl rounded-tl-none bg-zinc-900 border border-zinc-800 flex items-center gap-1.5 min-w-15 justify-center h-10">
-              <span className="w-2 h-2 rounded-full bg-zinc-600 animate-typing-dot-1" />
-              <span className="w-2 h-2 rounded-full bg-zinc-600 animate-typing-dot-2" />
-              <span className="w-2 h-2 rounded-full bg-zinc-600 animate-typing-dot-3" />
+            <div className="p-3.5 rounded-2xl rounded-tl-none bg-app-mid-dark/40 border border-app-mid-dark flex items-center gap-1.5 min-w-15 justify-center h-10">
+              <span className="w-2 h-2 rounded-full bg-app-text animate-typing-dot-1" />
+              <span className="w-2 h-2 rounded-full bg-app-text animate-typing-dot-2" />
+              <span className="w-2 h-2 rounded-full bg-app-text animate-typing-dot-3" />
             </div>
           </div>
         )}
@@ -78,7 +78,7 @@ export default function ChatWindow({
         )}
       </div>
 
-      <div className="px-2 py-0.5 border-t border-zinc-800/80">
+      <div className="px-2 py-0.5 border-t border-app-mid-dark">
         <ChatInput
           onSendMessage={onSendMessage}
           onClearChat={onClearChat}
