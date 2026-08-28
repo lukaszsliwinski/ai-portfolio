@@ -27,41 +27,38 @@ export default function ChatWindow({
   useEffect(() => {
     if (!scrollRef.current) return;
 
-    scrollRef.current.scrollTop =
-      scrollRef.current.scrollHeight;
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isThinking, error]);
 
   return (
-    <div className="scroll-mt-24 w-full max-w-2xl h-132 rounded-3xl border flex flex-col relative overflow-hidden shadow-none text-app-foreground bg-app-background/70 border-app-mid-dark" id="chat-window">
-      <div className="px-5 py-4 border-b border-app-mid-dark flex items-center gap-4">
+    <div
+      className="relative flex h-132 w-full max-w-2xl scroll-mt-24 flex-col overflow-hidden rounded-3xl border border-app-mid-dark bg-app-background/70 text-sm text-app-foreground shadow-none"
+      id="chat-window"
+    >
+      <div className="flex items-center gap-3 border-b border-app-mid-dark p-4">
         <AssistantAvatar showStatus />
-        <h3 className="font-semibold leading-none">
-          Portfolio Assistant
-        </h3>
+        <h3 className="font-semibold">Portfolio Assistant</h3>
       </div>
 
       {/* TODO: dobrze przeanalizować zachowanie klasy [overflow-anchor:none] */}
       <div
         ref={scrollRef}
         aria-live="polite"
-        className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-6 scroll-smooth scrollbar-minimal [overflow-anchor:none]"
+        className="scrollbar-minimal flex flex-1 flex-col gap-6 overflow-y-auto scroll-smooth p-5 [overflow-anchor:none]"
       >
         {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            message={message}
-          />
+          <ChatMessage key={message.id} message={message} />
         ))}
 
         {/* Loading indicator */}
         {isThinking && (
-          <div className="flex w-full items-end gap-3 px-1 animate-in fade-in duration-200">
+          <div className="animate-in fade-in flex w-full items-end gap-3 px-1 duration-200">
             <AssistantAvatar />
 
-            <div className="p-3.5 rounded-2xl rounded-tl-none bg-app-mid-dark/40 border border-app-mid-dark flex items-center gap-1.5 min-w-15 justify-center h-10">
-              <span className="w-2 h-2 rounded-full bg-app-text animate-typing-dot-1" />
-              <span className="w-2 h-2 rounded-full bg-app-text animate-typing-dot-2" />
-              <span className="w-2 h-2 rounded-full bg-app-text animate-typing-dot-3" />
+            <div className="flex h-10 min-w-15 items-center justify-center gap-1.5 rounded-2xl rounded-tl-none border border-app-mid-dark bg-app-mid-dark/40 p-3.5">
+              <span className="size-2 animate-typing-dot-1 rounded-full bg-app-text" />
+              <span className="size-2 animate-typing-dot-2 rounded-full bg-app-text" />
+              <span className="size-2 animate-typing-dot-3 rounded-full bg-app-text" />
             </div>
           </div>
         )}
@@ -70,16 +67,16 @@ export default function ChatWindow({
         {!isThinking && error && (
           <div
             role="alert"
-            className="flex w-full items-start gap-3 px-1 animate-in fade-in duration-200"
+            className="animate-in fade-in flex w-full items-start gap-3 px-1 duration-200"
           >
-            <div className="flex-1 px-4 py-3 rounded-2xl bg-red-950/60 border border-red-800/50 text-red-300 text-sm leading-relaxed">
+            <div className="flex-1 rounded-2xl border border-red-800/50 bg-red-950/60 px-4 py-3 text-red-300">
               {error}
             </div>
           </div>
         )}
       </div>
 
-      <div className="px-2 py-0.5 border-t border-app-mid-dark">
+      <div className="border-t border-app-mid-dark px-2 py-0.5">
         <ChatInput
           onSendMessage={onSendMessage}
           onClearChat={onClearChat}

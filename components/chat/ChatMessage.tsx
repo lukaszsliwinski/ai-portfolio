@@ -32,7 +32,7 @@ function parseInlineFormatting(text: string): React.ReactNode[] {
       return (
         <code
           key={index}
-          className="px-1.5 py-0.5 rounded bg-app-mid-dark font-mono text-xs"
+          className="rounded bg-app-mid-dark px-1.5 py-0.5 font-mono text-xs"
         >
           {part.slice(1, -1)}
         </code>
@@ -49,7 +49,7 @@ function FormattedContent({ content }: { content: string }) {
   const lines = content.split("\n");
 
   return (
-    <div className="flex flex-col gap-1.5 leading-relaxed">
+    <div className="flex flex-col gap-1.5">
       {lines.map((line, lineIndex) => {
         const trimmed = line.trim();
 
@@ -81,19 +81,24 @@ export function ChatMessage({ message }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        "flex w-full items-end gap-3 px-1 animate-in fade-in slide-in-from-bottom-2 duration-200",
-        isUser ? "justify-end" : "justify-start"
+        "animate-in fade-in slide-in-from-bottom-2 flex w-full items-end gap-3 px-1 duration-200",
+        isUser ? "justify-end" : "justify-start",
       )}
     >
       {!isUser && <AssistantAvatar />}
 
-      <div className={cn("flex flex-col max-w-3/4", isUser ? "items-end" : "items-start")}>
+      <div
+        className={cn(
+          "flex max-w-3/4 flex-col",
+          isUser ? "items-end" : "items-start",
+        )}
+      >
         <div
           className={cn(
-            "p-3.5 text-sm leading-relaxed shadow-sm font-normal wrap-break-words",
+            "wrap-break-words p-3.5 shadow-sm",
             isUser
-              ? "bg-app-main rounded-2xl rounded-tr-none"
-              : "bg-app-mid-dark/40 border border-app-mid-dark rounded-2xl rounded-tl-none"
+              ? "rounded-2xl rounded-tr-none bg-app-main"
+              : "rounded-2xl rounded-tl-none border border-app-mid-dark bg-app-mid-dark/40",
           )}
         >
           {isUser ? (

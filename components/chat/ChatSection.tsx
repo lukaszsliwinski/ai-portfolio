@@ -7,7 +7,6 @@ import SuggestedQuestions from "./SuggestedQuestions";
 import type { Message } from "./ChatMessage";
 
 import SectionHeader from "@/components/ui/SectionHeader";
-import SectionParagraph from "@/components/ui/SectionParagraph";
 
 import { DEFAULT_WELCOME_MESSAGE } from "@/app/api/chat/mocks";
 import { STREAM_ERROR_PREFIX } from "@/lib/ai/provider";
@@ -61,7 +60,9 @@ export default function ChatSection() {
       // Non-2xx responses are JSON errors (validation, 503, etc.)
       if (!response.ok) {
         const data = await response.json();
-        setError(data?.error ?? `Request failed with status ${response.status}.`);
+        setError(
+          data?.error ?? `Request failed with status ${response.status}.`,
+        );
         return;
       }
 
@@ -85,9 +86,13 @@ export default function ChatSection() {
         const chunk = decoder.decode(value, { stream: true });
 
         if (chunk.includes(STREAM_ERROR_PREFIX)) {
-          const apiError = chunk.split(STREAM_ERROR_PREFIX)[1] || "The AI assistant encountered an error.";
+          const apiError =
+            chunk.split(STREAM_ERROR_PREFIX)[1] ||
+            "The AI assistant encountered an error.";
           setError(apiError);
-          setMessages((prev) => prev.filter((m) => m.id !== assistantMessage.id));
+          setMessages((prev) =>
+            prev.filter((m) => m.id !== assistantMessage.id),
+          );
           break;
         }
 
@@ -95,12 +100,14 @@ export default function ChatSection() {
           prev.map((m) =>
             m.id === assistantMessage.id
               ? { ...m, content: m.content + chunk }
-              : m
-          )
+              : m,
+          ),
         );
       }
     } catch {
-      setError("Could not reach the assistant. Please check your connection and try again.");
+      setError(
+        "Could not reach the assistant. Please check your connection and try again.",
+      );
     } finally {
       setIsThinking(false);
       isSendingRef.current = false;
@@ -116,11 +123,11 @@ export default function ChatSection() {
 
   return (
     <section
-      className="w-full min-h-screen py-24 flex flex-col items-center justify-center overflow-hidden"
+      className="flex min-h-screen w-full flex-col items-center justify-center overflow-hidden py-24"
       id="chat"
     >
-      <div className="max-w-4xl xl:max-w-6xl flex max-lg:flex-col-reverse items-center justify-between gap-12 lg:gap-20">
-        <div className="flex-1 flex flex-col items-center justify-center max-w-xl">
+      <div className="flex max-w-4xl items-center justify-between gap-12 max-lg:flex-col-reverse lg:gap-20 xl:max-w-6xl">
+        <div className="flex max-w-xl flex-1 flex-col items-center justify-center">
           <ChatWindow
             messages={messages}
             isThinking={isThinking}
@@ -130,9 +137,9 @@ export default function ChatSection() {
           />
         </div>
 
-        <div className="flex-1 flex flex-col max-w-xl gap-6 w-full">
+        <div className="flex max-w-xl flex-1 flex-col gap-6">
           <SectionHeader main="Portfolio Assistant" />
-          <SectionParagraph text={CHAT_TEXT} />
+          <p>{CHAT_TEXT}</p>
           <SuggestedQuestions onSelectQuestion={handleSendMessage} />
         </div>
       </div>

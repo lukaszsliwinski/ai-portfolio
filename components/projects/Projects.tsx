@@ -3,7 +3,10 @@ import { PROJECTS } from "@/lib/constants";
 
 export default function Projects() {
   return (
-    <section className="w-full min-h-screen flex flex-col justify-center items-center gap-12 pb-16" id="projects">
+    <section
+      className="flex min-h-screen w-full flex-col items-center justify-center gap-12 pb-16"
+      id="projects"
+    >
       {PROJECTS.map((project) => (
         <ProjectCard
           key={project.liveLink}

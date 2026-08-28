@@ -7,9 +7,9 @@ import Footer from "@/components/footer/Footer";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <NavBar />
-      <main className="relative flex-1 flex flex-col items-center justify-center w-full px-4">
+      <main className="flex flex-col items-center justify-center px-4 leading-relaxed">
         <Background />
         <Landing />
         <ChatSection />

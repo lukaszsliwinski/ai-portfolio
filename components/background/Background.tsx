@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 // 3D background component with animated stars, rendered using Three.js
 // inspired by: https://www.youtube.com/watch?v=1qpeo5ewz_8
@@ -48,12 +48,12 @@ export default function Background() {
 
     // Buffer geometry and material for stars
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(verts, 3));
+    geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
     const mat = new THREE.PointsMaterial({
       size: 0.05,
       vertexColors: true,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
     });
 
     // Create star points and add to scene
@@ -81,7 +81,8 @@ export default function Background() {
     // Scroll handler - update position
     const handleScroll = () => {
       const scrollTop = document.documentElement.scrollTop;
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
       scrollPosY = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
     };
 
@@ -93,12 +94,12 @@ export default function Background() {
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
     // Cleanup on component unmount
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
       renderer.dispose();
     };
   }, []);
@@ -106,7 +107,7 @@ export default function Background() {
   return (
     <div
       ref={bgRef}
-      className="fixed top-0 left-0 w-screen h-screen -z-10 overflow-hidden"
+      className="fixed top-0 left-0 -z-10 h-screen w-screen overflow-hidden"
       id="site-background"
     ></div>
   );

@@ -5,7 +5,7 @@ import FaWrapper from "./FaWrapper";
 interface ButtonAnchorProps {
   label: string;
   href: string;
-  icon?: IconProp
+  icon?: IconProp;
 }
 
 export default function ButtonAnchor({ label, href, icon }: ButtonAnchorProps) {
@@ -19,7 +19,7 @@ export default function ButtonAnchor({ label, href, icon }: ButtonAnchorProps) {
       href={href}
       target={target}
       rel={rel}
-      className="group flex items-center justify-center min-w-35 min-h-10 px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-50 text-app-foreground bg-app-mid-dark/20 hover:bg-app-mid-dark/30 hover:text-app-main border border-app-mid-dark active:opacity-90 cursor-pointer"
+      className="flex min-h-10 min-w-35 cursor-pointer items-center justify-center rounded-xl border border-app-mid-dark bg-app-mid-dark/20 px-3 py-2 text-sm font-semibold text-app-foreground transition-all duration-50 hover:bg-app-mid-dark/30 hover:text-app-main active:opacity-90"
     >
       {icon && <FaWrapper icon={icon} size={16} className="mr-1.5 mb-px" />}
       <span>{label}</span>

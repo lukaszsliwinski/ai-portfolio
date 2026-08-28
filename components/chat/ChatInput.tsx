@@ -58,16 +58,14 @@ export function ChatInput({
         e.preventDefault();
         submit();
       }}
-        className="flex items-center gap-2"
+      className="flex items-center gap-2"
     >
       <button
         type="button"
         onClick={onClearChat}
         title="Clear Conversation"
         aria-label="Clear conversation history"
-        className="w-10 h-10 rounded-full flex justify-center items-center border shrink-0 transition-all
-          text-app-text hover:text-app-foreground bg-app-mid-dark/20 hover:bg-app-mid-dark/30 border-app-mid-dark
-          active:opacity-90 focus:outline-none cursor-pointer"
+        className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-app-mid-dark bg-app-mid-dark/20 text-app-text transition-all hover:bg-app-mid-dark/30 hover:text-app-foreground focus:outline-none active:opacity-90"
       >
         <FaWrapper icon={faRotateLeft} size={16} />
       </button>
@@ -88,17 +86,12 @@ export function ChatInput({
             }
           }}
           placeholder={
-            isDisabled
-              ? "Assistant is thinking..."
-              : "Write a question..."
+            isDisabled ? "Assistant is thinking..." : "Write a question..."
           }
-          className="w-full max-h-21 min-h-11.5 overflow-y-auto resize-none scrollbar-minimal p-3 rounded-xl border text-sm font-medium
-          bg-app-mid-dark/40 border-app-mid-dark
-          placeholder-app-text focus:ring-1 focus:ring-app-mid-light focus:outline-none
-          disabled:cursor-not-allowed"
+          className="scrollbar-minimal max-h-21 min-h-11.5 w-full resize-none overflow-y-auto rounded-xl border border-app-mid-dark bg-app-mid-dark/40 p-3 placeholder-app-text focus:ring-1 focus:ring-app-mid-light focus:outline-none disabled:cursor-not-allowed"
         />
 
-        <span className="absolute right-3 bottom-2 text-[10px] font-semibold text-app-text bg-app-mid-dark/10 px-1.5 py-0.5 rounded-lg">
+        <span className="absolute right-3 bottom-2 rounded-lg bg-app-mid-dark/10 px-1.5 py-0.5 text-[10px] text-app-text">
           {count}/{MAX_QUESTION_LENGTH}
         </span>
       </div>
@@ -107,10 +100,7 @@ export function ChatInput({
         type="submit"
         disabled={isDisabled || !value.trim()}
         aria-label="Send message"
-        className="w-10 h-10 rounded-full flex justify-center items-center shrink-0 transition-all
-          bg-app-foreground/90 text-app-background hover:opacity-80
-          active:opacity-90 cursor-pointer
-          disabled:opacity-40 disabled:cursor-not-allowed"
+        className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-app-foreground/90 text-app-background transition-all hover:opacity-80 active:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <FaWrapper icon={faArrowUp} size={16} />
       </button>
