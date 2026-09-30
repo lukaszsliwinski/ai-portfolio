@@ -7,6 +7,7 @@ import SuggestedQuestions from "./SuggestedQuestions";
 import type { Message } from "./ChatMessage";
 
 import SectionHeader from "@/components/ui/SectionHeader";
+import Reveal from "@/components/ui/Reveal";
 
 import { DEFAULT_WELCOME_MESSAGE } from "@/app/api/chat/mocks";
 import { STREAM_ERROR_PREFIX } from "@/lib/ai/provider";
@@ -127,7 +128,7 @@ export default function ChatSection() {
       id="chat"
     >
       <div className="flex max-w-4xl items-center justify-between gap-12 max-lg:flex-col-reverse lg:gap-20 xl:max-w-6xl">
-        <div className="flex max-w-xl flex-1 flex-col items-center justify-center">
+        <Reveal className="flex max-w-xl flex-1 flex-col items-center justify-center">
           <ChatWindow
             messages={messages}
             isThinking={isThinking}
@@ -135,13 +136,12 @@ export default function ChatSection() {
             onSendMessage={handleSendMessage}
             onClearChat={handleClearChat}
           />
-        </div>
-
-        <div className="flex max-w-xl flex-1 flex-col gap-6">
+        </Reveal>
+        <Reveal className="flex max-w-xl flex-1 flex-col gap-6">
           <SectionHeader main="Portfolio Assistant" />
           <p>{CHAT_TEXT}</p>
           <SuggestedQuestions onSelectQuestion={handleSendMessage} />
-        </div>
+        </Reveal>
       </div>
     </section>
   );

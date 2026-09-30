@@ -12,12 +12,12 @@ export const TECHNOLOGIES = [
   { name: 'React', src: '/icons/react.png' },
   { name: 'Next.js', src: '/icons/next.png' },
   { name: 'TailwindCSS', src: '/icons/tailwind.png' },
-  { name: 'Python', src: '/icons/python.png' },
+  { name: 'Animations', src: '/icons/motion.png' },
   { name: 'Node.js', src: '/icons/node.png' },
+  { name: 'Python', src: '/icons/python.png' },
   { name: 'Docker', src: '/icons/docker.png' },
   { name: 'MySQL', src: '/icons/mysql.png' },
   { name: 'MongoDB', src: '/icons/mongo.png' },
-  { name: 'Animations', src: '/icons/motion.png' },
   { name: 'AI Web Dev', src: '/icons/aiweb.png' },
 ];
 

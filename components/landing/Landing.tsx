@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "motion/react";
 import { faLaptopCode } from "@fortawesome/free-solid-svg-icons";
 import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
 
@@ -7,6 +10,8 @@ import ButtonAnchor from "@/components/ui/ButtonAnchor";
 
 import { LANDING_TEXT } from "@/lib/constants";
 import { TECHNOLOGIES } from "@/lib/constants";
+import Reveal from "@/components/ui/Reveal";
+import StaggerReveal, { childVariants } from "@/components/ui/StaggerReveal";
 
 interface TechBadgeProps {
   src: string;
@@ -29,7 +34,7 @@ export default function Landing() {
   return (
     <section className="flex min-h-screen w-full flex-col items-center justify-center overflow-hidden py-24">
       <div className="flex max-w-4xl items-center justify-between gap-12 max-lg:flex-col lg:gap-20 xl:max-w-6xl">
-        <div className="flex max-w-xl flex-1 flex-col gap-6">
+        <Reveal className="flex max-w-xl flex-1 flex-col gap-6">
           <Image
             className="mx-auto lg:hidden"
             src="/images/main.png"
@@ -41,15 +46,19 @@ export default function Landing() {
           <p>{LANDING_TEXT}</p>
 
           <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap gap-2 max-lg:justify-center">
+            <StaggerReveal
+              delay={0.3}
+              className="flex flex-wrap gap-2 max-lg:justify-center"
+            >
               {TECHNOLOGIES.map((tech) => (
-                <TechBadge key={tech.name} src={tech.src} name={tech.name} />
+                <motion.div key={tech.name} variants={childVariants}>
+                  <TechBadge src={tech.src} name={tech.name} />
+                </motion.div>            
               ))}
-            </div>
+            </StaggerReveal>
           </div>
-        </div>
-
-        <div className="flex max-w-xl flex-1 flex-col items-center justify-center gap-10">
+        </Reveal>
+        <Reveal className="flex max-w-xl flex-1 flex-col items-center justify-center gap-10">
           <Image
             className="max-lg:hidden"
             src="/images/main.png"
@@ -57,19 +66,23 @@ export default function Landing() {
             width={250}
             height={250}
           />
-          <div className="flex flex-wrap gap-2">
-            <ButtonAnchor
-              href="#chat"
-              label="Ask a question"
-              icon={faGithubAlt}
-            />
-            <ButtonAnchor
-              href="#projects"
-              label="Go to projects"
-              icon={faLaptopCode}
-            />
-          </div>
-        </div>
+          <StaggerReveal delay={1.2} className="flex flex-wrap justify-center gap-2">
+            <motion.div variants={childVariants}>
+              <ButtonAnchor
+                href="#chat"
+                label="Ask a question"
+                icon={faGithubAlt}
+              />
+            </motion.div>
+            <motion.div variants={childVariants}>
+              <ButtonAnchor
+                href="#projects"
+                label="Go to projects"
+                icon={faLaptopCode}
+              />
+            </motion.div>
+          </StaggerReveal>
+        </Reveal>
       </div>
     </section>
   );

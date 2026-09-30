@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import Appear from "@/components/ui/Appear";
 
 // 3D background component with animated stars, rendered using Three.js
 // inspired by: https://www.youtube.com/watch?v=1qpeo5ewz_8
@@ -105,10 +106,12 @@ export default function Background() {
   }, []);
 
   return (
-    <div
-      ref={bgRef}
-      className="fixed top-0 left-0 -z-10 h-screen w-screen overflow-hidden"
-      id="site-background"
-    ></div>
+    <Appear>
+      <div
+        ref={bgRef}
+        className="fixed top-0 left-0 -z-10 h-screen w-screen overflow-hidden"
+        id="site-background"
+      ></div>
+    </Appear>
   );
 }
