@@ -44,10 +44,10 @@ export default function ProjectCard({
   screenSrc,
 }: ProjectCardProps) {
   return (
-    <Reveal className="flex w-full max-w-xl flex-col-reverse gap-6 rounded-3xl border border-app-mid-dark bg-app-background/70 px-5 py-8 sm:p-12 lg:grid lg:max-w-4xl lg:grid-cols-4 lg:gap-20 xl:max-w-5xl xl:grid-cols-5">
+    <Reveal className="flex w-full max-w-xl flex-col-reverse gap-6 rounded-lg border border-app-mid-dark bg-app-background/70 px-5 py-8 sm:p-12 lg:grid lg:max-w-4xl lg:grid-cols-4 lg:gap-20 xl:max-w-5xl xl:grid-cols-5">
       <div className="col-span-2 flex flex-col-reverse justify-center gap-6 lg:flex-col lg:gap-4">
         <Laptop screenSrc={screenSrc} />
-        <div className="mx-2 flex justify-center gap-6 lg:gap-4">
+        <div className="mx-2 flex justify-center gap-2">
           <ButtonAnchor href={codeLink} label="Code" icon={faCode} />
           <ButtonAnchor href={liveLink} label="Link" icon={faLink} />
         </div>

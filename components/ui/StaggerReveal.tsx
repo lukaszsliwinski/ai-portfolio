@@ -43,11 +43,8 @@ export default function StaggerReveal({
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "0px 0px 80px 0px" }}
+      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
     >
-      {/* {Children.map(children, (child) => (
-        <motion.div variants={childVariants}>{child}</motion.div>
-      ))} */}
       {children}
     </motion.div>
   );

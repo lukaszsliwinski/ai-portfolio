@@ -88,10 +88,10 @@ export function ChatInput({
           placeholder={
             isDisabled ? "Assistant is thinking..." : "Write a question..."
           }
-          className="scrollbar-minimal max-h-21 min-h-11.5 w-full resize-none overflow-y-auto rounded-xl border border-app-mid-dark bg-app-mid-dark/40 p-3 placeholder-app-text focus:ring-1 focus:ring-app-mid-light focus:outline-none disabled:cursor-not-allowed"
+          className="scrollbar-minimal max-h-21 min-h-11.5 w-full resize-none overflow-y-auto rounded-md border border-app-mid-dark bg-app-mid-dark/40 p-3 placeholder-app-text focus:ring-1 focus:ring-app-mid-light focus:outline-none disabled:cursor-not-allowed"
         />
 
-        <span className="absolute right-3 bottom-2 rounded-lg bg-app-mid-dark/10 px-1.5 py-0.5 text-[10px] text-app-text">
+        <span className="absolute right-3 bottom-2 bg-app-mid-dark/10 px-1.5 py-0.5 text-[10px] text-app-text">
           {count}/{MAX_QUESTION_LENGTH}
         </span>
       </div>

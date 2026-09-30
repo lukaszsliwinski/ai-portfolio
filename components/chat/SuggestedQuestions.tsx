@@ -27,7 +27,7 @@ export default function SuggestedQuestions({
               if (window.innerWidth >= 1024) e.preventDefault();
               onSelectQuestion(question);
             }}
-            className="mx-auto flex w-full cursor-pointer items-center rounded-xl border border-app-mid-dark bg-app-mid-dark/20 px-4 py-2 text-app-foreground transition-all duration-200 hover:bg-app-mid-dark/30 hover:text-app-main active:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 max-sm:max-w-80 max-sm:text-center"
+            className="mx-auto flex w-full cursor-pointer items-center rounded-md border border-app-mid-dark bg-app-mid-dark/20 px-4 py-2 text-app-foreground transition-all duration-200 hover:bg-app-mid-dark/30 hover:text-app-main active:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 max-sm:max-w-80 max-sm:text-center"
           >
             {question}
           </motion.a>

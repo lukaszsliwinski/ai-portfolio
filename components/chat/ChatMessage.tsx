@@ -97,8 +97,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
           className={cn(
             "wrap-break-words p-3.5 shadow-sm",
             isUser
-              ? "rounded-2xl rounded-tr-none bg-app-main"
-              : "rounded-2xl rounded-tl-none border border-app-mid-dark bg-app-mid-dark/40",
+              ? "rounded-lg rounded-tr-none bg-app-main"
+              : "rounded-lg rounded-tl-none border border-app-mid-dark bg-app-mid-dark/40",
           )}
         >
           {isUser ? (

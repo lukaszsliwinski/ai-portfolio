@@ -32,7 +32,7 @@ export default function ChatWindow({
 
   return (
     <div
-      className="relative flex h-132 w-full max-w-2xl scroll-mt-24 flex-col overflow-hidden rounded-3xl border border-app-mid-dark bg-app-background/70 text-sm text-app-foreground shadow-none"
+      className="relative flex h-132 w-full max-w-2xl scroll-mt-24 flex-col overflow-hidden rounded-lg border border-app-mid-dark bg-app-background/70 text-sm text-app-foreground shadow-none"
       id="chat-window"
     >
       <div className="flex items-center gap-3 border-b border-app-mid-dark p-4">
@@ -55,7 +55,7 @@ export default function ChatWindow({
           <div className="animate-in fade-in flex w-full items-end gap-3 px-1 duration-200">
             <AssistantAvatar />
 
-            <div className="flex h-10 min-w-15 items-center justify-center gap-1.5 rounded-2xl rounded-tl-none border border-app-mid-dark bg-app-mid-dark/40 p-3.5">
+            <div className="flex h-10 min-w-15 items-center justify-center gap-1.5 rounded-lg rounded-tl-none border border-app-mid-dark bg-app-mid-dark/40 p-3.5">
               <span className="size-2 animate-typing-dot-1 rounded-full bg-app-text" />
               <span className="size-2 animate-typing-dot-2 rounded-full bg-app-text" />
               <span className="size-2 animate-typing-dot-3 rounded-full bg-app-text" />
@@ -69,7 +69,7 @@ export default function ChatWindow({
             role="alert"
             className="animate-in fade-in flex w-full items-start gap-3 px-1 duration-200"
           >
-            <div className="flex-1 rounded-2xl border border-red-800/50 bg-red-950/60 px-4 py-3 text-red-300">
+            <div className="flex-1 rounded-md border border-red-800/50 bg-red-950/60 px-4 py-3 text-red-300">
               {error}
             </div>
           </div>
