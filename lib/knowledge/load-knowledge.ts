@@ -1,28 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-
-export interface DeveloperMeta {
-  displayName: string;
-  role: string;
-  location: string;
-  mainStack: string[];
-  languages: string[];
-  contact: {
-    email: string;
-    github: string;
-    linkedin: string;
-  };
-}
-
-export interface KnowledgeData {
-  profile: string;
-  experience: string;
-  skills: string;
-  projects: string;
-  interests: string;
-  recruiterFaq: string;
-  meta: DeveloperMeta;
-}
+import type { DeveloperMeta, KnowledgeData } from "./types";
 
 /**
  * Loads developer knowledge files from the local filesystem.
@@ -63,6 +41,8 @@ export async function loadKnowledge(): Promise<KnowledgeData> {
     };
   } catch (error) {
     console.error("Error loading knowledge content files:", error);
-    throw new Error("Failed to load developer knowledge files. Make sure all required files exist in the content directory.");
+    throw new Error(
+      "Failed to load developer knowledge files. Make sure all required files exist in the content directory.",
+    );
   }
 }

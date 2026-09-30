@@ -1,11 +1,19 @@
-import { KnowledgeData } from "./load-knowledge";
+import type { KnowledgeData } from "./types";
 
 /**
  * Formats structured knowledge data into a single coherent Markdown string
  * that can be appended to the LLM system prompt context.
  */
 export function formatKnowledge(data: KnowledgeData): string {
-  const { meta, profile, experience, skills, projects, interests, recruiterFaq } = data;
+  const {
+    meta,
+    profile,
+    experience,
+    skills,
+    projects,
+    interests,
+    recruiterFaq,
+  } = data;
 
   return `
 # DEVELOPER KNOWLEDGE BASE (FACTUAL CONTEXT)

@@ -2,11 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { validateChatRequest } from "@/lib/security/validate-chat-request";
 import { checkRateLimit } from "@/lib/security/rate-limit";
-import { loadKnowledge } from "@/lib/knowledge/load-knowledge";
-import { formatKnowledge } from "@/lib/knowledge/format-knowledge";
-import { getSystemPrompt } from "@/lib/ai/system-prompt";
-import { streamChat } from "@/lib/ai/provider";
-import { logChatMessage, logErrorEvent } from "@/lib/logging/log-chat";
+import { createChatStream } from "@/lib/chat/chat-service";
+import { logChatMessage, logErrorEvent } from "@/lib/chat/logger";
 
 /** Formats seconds into human-readable hours and minutes rounded up. */
 function formatWaitTime(totalSeconds: number): string {
@@ -30,23 +27,6 @@ function formatWaitTime(totalSeconds: number): string {
  * constructs system prompt, and streams Gemini response.
  */
 export async function POST(request: NextRequest) {
-  // 1. Feature flag
-  const chatEnabled = process.env.CHAT_ENABLED !== "false";
-  if (!chatEnabled) {
-    return NextResponse.json(
-      { error: "Chat service is temporarily disabled." },
-      { status: 503 }
-    );
-  }
-
-  // 2. API key guard — fail fast
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json(
-      { error: "LLM provider is not configured. Please contact the site owner." },
-      { status: 503 }
-    );
-  }
-
   try {
     const headersList = await headers();
     const clientIp =
@@ -54,17 +34,21 @@ export async function POST(request: NextRequest) {
       headersList.get("x-real-ip") ||
       "127.0.0.1";
 
-    // 3. Same-Origin Guard (Security E): block cross-origin browser requests
+    // Same-Origin Guard: block cross-origin browser requests
     const origin = headersList.get("origin");
     const host = headersList.get("host");
     if (origin && host) {
       try {
         const originHost = new URL(origin).host;
         if (originHost !== host) {
-          logErrorEvent({ ip: clientIp, type: "forbidden", error: "Cross-origin request blocked" });
+          logErrorEvent({
+            ip: clientIp,
+            type: "forbidden",
+            error: "Cross-origin request blocked",
+          });
           return NextResponse.json(
             { error: "Forbidden: Cross-origin requests are not allowed." },
-            { status: 403 }
+            { status: 403 },
           );
         }
       } catch {
@@ -84,48 +68,49 @@ export async function POST(request: NextRequest) {
           headers: {
             "Retry-After": String(rateLimit.resetSeconds),
           },
-        }
+        },
       );
     }
 
-    // 5. Parse request body
+    // Parse request body
     let body: unknown;
     try {
       body = await request.json();
     } catch {
-      logErrorEvent({ ip: clientIp, type: "bad_request", error: "Invalid JSON in request body" });
+      logErrorEvent({
+        ip: clientIp,
+        type: "bad_request",
+        error: "Invalid JSON in request body",
+      });
       return NextResponse.json(
         { error: "Invalid JSON in request body." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // 6. Validate structure and limits
+    // Validate structure and limits
     const validation = validateChatRequest(body);
     if (!validation.isValid) {
-      logErrorEvent({ ip: clientIp, type: "bad_request", error: validation.error || "Validation failed" });
+      logErrorEvent({
+        ip: clientIp,
+        type: "bad_request",
+        error: validation.error || "Validation failed",
+      });
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    const { messages } = body as {
-      messages: Array<{ role: string; content: string }>;
-    };
+    const { messages } = validation.data;
 
-    // 7. Log latest user message asynchronously in background
-    const lastUserMsg = [...messages].reverse().find((m) => m.role === "user")?.content;
+    // Log latest user message asynchronously in background
+    const lastUserMsg = [...messages]
+      .reverse()
+      .find((m) => m.role === "user")?.content;
     if (lastUserMsg) {
       logChatMessage({ ip: clientIp, userMessage: lastUserMsg });
     }
 
-    // 8. Build knowledge-grounded system prompt
-    const knowledge = await loadKnowledge();
-    const systemPrompt = getSystemPrompt(formatKnowledge(knowledge));
-
-    // 9. Assemble full message list: [system, ...conversationHistory]
-    const llmMessages = [{ role: "system", content: systemPrompt }, ...messages];
-
-    // 10. Stream response from Gemini
-    const stream = streamChat(llmMessages);
+    // Build the knowledge-grounded prompt and stream the Gemini response
+    const stream = await createChatStream(messages);
 
     return new Response(stream, {
       headers: { "Content-Type": "text/plain; charset=utf-8" },

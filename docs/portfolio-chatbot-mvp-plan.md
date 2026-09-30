@@ -112,19 +112,17 @@ The MVP should not store chat conversations, user identities, recruiter data, an
 
 A lightweight technical store may be used only if needed for rate limiting. For example, Redis can be introduced as an implementation detail, but it is not part of the chatbot knowledge model.
 
-## LLM strategy
+## Gemini strategy
 
-The initial implementation should use the cheapest practical cloud LLM option available at implementation time, preferably one with a free tier.
+The application uses Google Gemini through the `@google/genai` SDK. Gemini is the fixed model provider for this project.
 
-The project should be designed so that the LLM provider can be replaced later without rewriting the whole application.
-
-Recommended architectural direction:
+Architecture:
 
 ```txt
-Chat UI -> /api/chat -> LLM adapter -> selected provider
+Chat UI -> /api/chat -> chat service -> Gemini
 ```
 
-The LLM provider should be isolated behind a small server-side abstraction.
+The Gemini integration must remain server-side so that the API key is never exposed to the browser.
 
 The MVP should not run a local model on the VPS, because the VPS is intended for hosting web applications and is not expected to have enough resources for a good local LLM experience.
 
@@ -150,7 +148,7 @@ The UI should be polished, but the MVP should avoid overbuilding interactions th
 
 ## Streaming responses
 
-The assistant should stream responses token by token if the selected provider and integration support it.
+The assistant should use Gemini streaming to return responses token by token.
 
 This improves perceived performance and makes the chatbot feel more responsive.
 
@@ -240,8 +238,8 @@ The following improvements are good candidates for later versions:
 6. **Feedback controls**  
    Add “Was this helpful?” feedback after responses.
 
-7. **Provider upgrade**  
-   Replace the initial low-cost/free model with a stronger model if quality becomes more important than cost.
+7. **Gemini model upgrade**  
+   Use a stronger Gemini model if quality becomes more important than cost.
 
 ## What this project should demonstrate
 

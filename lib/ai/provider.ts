@@ -1,23 +1,19 @@
 import { GoogleGenAI } from "@google/genai";
-
-const MODEL = process.env.LLM_MODEL ?? "gemini-3.1-flash-lite";
-
-interface LLMMessage {
-  role: string;
-  content: string;
-}
-
-/**
- * Sentinel prefix written into stream when Gemini API encounters an error.
- */
-export const STREAM_ERROR_PREFIX = "__STREAM_ERROR__:";
+import { chatConfig } from "@/lib/chat/config";
+import { STREAM_ERROR_PREFIX } from "@/lib/chat/stream-protocol";
+import type { LLMMessage } from "@/lib/chat/types";
 
 /** Extracts a friendly user-facing error message from Google API errors. */
 function parseGoogleError(error: unknown): string {
-  if (!(error instanceof Error)) return "The AI assistant encountered an unexpected error.";
+  if (!(error instanceof Error))
+    return "The AI assistant encountered an unexpected error.";
 
   const msg = error.message.toLowerCase();
-  if (msg.includes("429") || msg.includes("resource_exhausted") || msg.includes("quota")) {
+  if (
+    msg.includes("429") ||
+    msg.includes("resource_exhausted") ||
+    msg.includes("quota")
+  ) {
     return "The AI provider is currently rate-limited by Google API quota. Please try again in a moment.";
   }
   if (msg.includes("404") || msg.includes("not_found")) {
@@ -35,8 +31,7 @@ function parseGoogleError(error: unknown): string {
  * Emits STREAM_ERROR_PREFIX sentinel line on error instead of throwing uncaught stream error.
  */
 export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
-  const apiKey = process.env.GEMINI_API_KEY!;
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey: chatConfig.geminiApiKey });
 
   const systemMessage = messages.find((m) => m.role === "system");
   const conversation = messages.filter((m) => m.role !== "system");
@@ -52,7 +47,7 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
     async start(controller) {
       try {
         const response = await ai.models.generateContentStream({
-          model: MODEL,
+          model: chatConfig.model,
           contents,
           config: {
             systemInstruction: systemMessage?.content,
@@ -69,7 +64,9 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
       } catch (error) {
         console.error("[provider] Gemini stream error:", error);
         const userError = parseGoogleError(error);
-        controller.enqueue(encoder.encode(`${STREAM_ERROR_PREFIX}${userError}`));
+        controller.enqueue(
+          encoder.encode(`${STREAM_ERROR_PREFIX}${userError}`),
+        );
       } finally {
         controller.close();
       }

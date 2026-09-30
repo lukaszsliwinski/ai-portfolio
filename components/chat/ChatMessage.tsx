@@ -1,16 +1,10 @@
 import React from "react";
 import AssistantAvatar from "./AssistantAvatar";
+import type { ChatUiMessage } from "./types";
 import { cn } from "@/lib/utils";
 // TODO: dokładniej przeanalizować
-export interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
-}
-
 interface ChatMessageProps {
-  message: Message;
+  message: ChatUiMessage;
 }
 
 /**

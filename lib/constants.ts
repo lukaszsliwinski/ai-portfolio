@@ -30,6 +30,14 @@ export const SUGGESTED_QUESTIONS = [
 ];
 
 
+export const DEFAULT_WELCOME_MESSAGE = {
+  id: "welcome-msg",
+  role: "assistant" as const,
+  content:
+    "Hi, I'm Łukasz's AI portfolio assistant! I speak in the first person on behalf of the developer. You can ask me questions about skills, work experience, projects, or interests.\n\nWhat would you like to know?",
+};
+
+
 export const LANDING_TEXT = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letrasets Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged.'
 
 

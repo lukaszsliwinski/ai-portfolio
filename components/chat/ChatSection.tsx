@@ -4,31 +4,40 @@ import { useState, useRef } from "react";
 
 import ChatWindow from "./ChatWindow";
 import SuggestedQuestions from "./SuggestedQuestions";
-import type { Message } from "./ChatMessage";
+import type { ChatUiMessage } from "./types";
 
 import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/ui/Reveal";
 
-import { DEFAULT_WELCOME_MESSAGE } from "@/app/api/chat/mocks";
-import { STREAM_ERROR_PREFIX } from "@/lib/ai/provider";
-import { CHAT_TEXT } from "@/lib/constants";
+import { STREAM_ERROR_PREFIX } from "@/lib/chat/stream-protocol";
+import { CHAT_TEXT, DEFAULT_WELCOME_MESSAGE } from "@/lib/constants";
 
-// Must match MAX_CONVERSATION_LENGTH in validate-chat-request.ts
-const MAX_API_MESSAGES = 10;
+interface ChatSectionProps {
+  maxMessageLength: number;
+  maxMessages: number;
+}
 
-const createWelcomeMessages = (): Message[] => [
+const createWelcomeMessages = (): ChatUiMessage[] => [
   { ...DEFAULT_WELCOME_MESSAGE, timestamp: new Date() },
 ];
 
-const createMessage = (role: Message["role"], content: string): Message => ({
+const createMessage = (
+  role: ChatUiMessage["role"],
+  content: string,
+): ChatUiMessage => ({
   id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
   role,
   content,
   timestamp: new Date(),
 });
 
-export default function ChatSection() {
-  const [messages, setMessages] = useState<Message[]>(createWelcomeMessages);
+export default function ChatSection({
+  maxMessageLength,
+  maxMessages,
+}: ChatSectionProps) {
+  const [messages, setMessages] = useState<ChatUiMessage[]>(
+    createWelcomeMessages,
+  );
   const [isThinking, setIsThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,7 +57,7 @@ export default function ChatSection() {
     // Build history: exclude welcome message, cap at API limit
     const history = [...messages, userMessage]
       .filter((m) => m.id !== "welcome-msg")
-      .slice(-MAX_API_MESSAGES)
+      .slice(-maxMessages)
       .map(({ role, content }) => ({ role, content }));
 
     try {
@@ -135,6 +144,7 @@ export default function ChatSection() {
             error={error}
             onSendMessage={handleSendMessage}
             onClearChat={handleClearChat}
+            maxMessageLength={maxMessageLength}
           />
         </Reveal>
         <Reveal className="flex max-w-xl flex-1 flex-col gap-6">

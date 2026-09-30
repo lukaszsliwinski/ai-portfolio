@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Message } from "./ChatMessage";
+import type { ChatUiMessage } from "./types";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import AssistantAvatar from "./AssistantAvatar";
 
 interface ChatWindowProps {
-  messages: Message[];
+  messages: ChatUiMessage[];
   isThinking: boolean;
   /** Non-null when the last API call returned an error. */
   error: string | null;
   onSendMessage: (content: string) => void;
   onClearChat: () => void;
+  maxMessageLength: number;
 }
 
 export default function ChatWindow({
@@ -21,6 +22,7 @@ export default function ChatWindow({
   error,
   onSendMessage,
   onClearChat,
+  maxMessageLength,
 }: ChatWindowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +83,7 @@ export default function ChatWindow({
           onSendMessage={onSendMessage}
           onClearChat={onClearChat}
           isDisabled={isThinking}
+          maxMessageLength={maxMessageLength}
         />
       </div>
     </div>

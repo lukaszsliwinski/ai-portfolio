@@ -27,7 +27,7 @@ Next.js App Router
   ├─ /api/chat server endpoint
   ├─ Content loader for Markdown/JSON knowledge files
   ├─ Assistant policy and prompt construction
-  ├─ LLM provider adapter
+  ├─ Gemini streaming integration
   ├─ Input validation and rate limiting
   └─ Docker-ready production build
 ```
@@ -95,7 +95,12 @@ lib/
   ai/
     provider.ts
     system-prompt.ts
+  chat/
     chat-service.ts
+    config.ts
+    logger.ts
+    stream-protocol.ts
+    types.ts
   knowledge/
     load-knowledge.ts
     format-knowledge.ts
@@ -188,34 +193,32 @@ Requirements:
 
 No database should be added for content.
 
-## LLM provider approach
+## Gemini integration
 
-Use the cheapest practical cloud LLM provider available at implementation time, preferably one with a free tier.
+Use Google Gemini through the `@google/genai` SDK. Gemini is the fixed model provider for this project.
 
-Do not hard-couple the app to one provider across the codebase.
+Keep all Gemini API calls on the server.
 
-Create a small provider abstraction, for example:
+Keep the Gemini streaming implementation in:
 
 ```txt
-lib/chat/llm-provider.ts
+lib/ai/provider.ts
 ```
 
-The rest of the app should call this abstraction rather than importing provider-specific SDK code everywhere.
+The chat flow should call Gemini through `lib/chat/chat-service.ts`. Client Components must not import the Gemini SDK or the server-side provider module.
 
-The provider adapter should support streaming if the selected provider supports it.
+Use Gemini's streaming API for assistant responses.
 
 Environment variables should be used for secrets and model configuration.
 
 Suggested environment names:
 
 ```txt
-LLM_PROVIDER=
 LLM_MODEL=
-LLM_API_KEY=
-CHAT_ENABLED=true
+GEMINI_API_KEY=
 ```
 
-Do not expose LLM API keys to the browser.
+Do not expose the Gemini API key to the browser.
 
 ## API endpoint
 
@@ -229,16 +232,15 @@ src/app/api/chat/route.ts
 
 The endpoint should:
 
-1. reject requests if `CHAT_ENABLED=false`,
-2. validate input,
-3. enforce rate limits,
-4. limit message length,
-5. limit conversation length,
-6. load the knowledge files server-side,
-7. build the assistant context,
-8. call the LLM provider adapter,
-9. stream or return the response,
-10. return clear error responses for invalid requests.
+1. validate input,
+2. enforce rate limits,
+3. limit message length,
+4. limit conversation length,
+5. load the knowledge files server-side,
+6. build the assistant context,
+7. call the chat service backed by Gemini,
+8. stream or return the response,
+9. return clear error responses for invalid requests.
 
 ## Input validation
 
@@ -258,7 +260,7 @@ Recommended MVP limits:
 ```txt
 Maximum user message length: 800 characters
 Maximum messages sent to model: 10
-Maximum assistant response length: provider-level token limit, kept short
+Maximum assistant response length: Gemini `maxOutputTokens`, kept short
 ```
 
 Exact values may be adjusted during implementation.
@@ -385,8 +387,7 @@ Handle these states clearly in the UI:
 
 - invalid message,
 - rate limit exceeded,
-- chat temporarily disabled,
-- LLM provider error,
+- Gemini API error,
 - network error,
 - empty response.
 
@@ -445,12 +446,10 @@ Create or update `.env.example` with non-secret placeholders.
 Suggested keys:
 
 ```txt
-CHAT_ENABLED=true
-LLM_PROVIDER=
 LLM_MODEL=
-LLM_API_KEY=
+GEMINI_API_KEY=
 CHAT_RATE_LIMIT_REQUESTS=10
-CHAT_RATE_LIMIT_WINDOW_SECONDS=600
+CHAT_RATE_LIMIT_WINDOW_HOURS=1
 CHAT_MAX_MESSAGE_LENGTH=800
 CHAT_MAX_MESSAGES=10
 ```
@@ -468,7 +467,7 @@ At minimum, verify:
 - clear chat works,
 - endpoint rejects invalid input,
 - endpoint enforces message length,
-- endpoint handles missing/disabled provider configuration gracefully,
+- application fails fast with a clear error when required configuration is missing,
 - assistant does not answer unrelated general questions as if it were a general chatbot.
 
 If the project has a test framework, add focused tests for validation and content loading.
@@ -502,8 +501,7 @@ Do not introduce a large test framework solely for MVP unless the project alread
 
 - Add `/api/chat` endpoint.
 - Add validation.
-- Add disabled-chat fallback.
-- Add placeholder provider response if API key is missing.
+- Validate required Gemini configuration and fail fast if it is missing.
 
 ### Step 5: Add content loader and assistant context
 
@@ -511,11 +509,11 @@ Do not introduce a large test framework solely for MVP unless the project alread
 - Build the assistant context from local files.
 - Add behavior policy enforcement through server-side prompt construction.
 
-### Step 6: Add real LLM provider adapter
+### Step 6: Add Gemini integration
 
-- Add selected low-cost/free cloud provider integration.
-- Keep provider-specific logic isolated.
-- Implement streaming if supported.
+- Integrate Gemini using `@google/genai`.
+- Keep Gemini API calls on the server.
+- Implement streaming responses.
 
 ### Step 7: Add rate limiting
 

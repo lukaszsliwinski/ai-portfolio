@@ -17,7 +17,9 @@ const logsDir = path.join(process.cwd(), "logs");
 
 /** Formats current date/time to ISO-like string in Europe/Warsaw timezone (YYYY-MM-DDTHH:mm:ss) */
 function getWarsawTimestamp(): string {
-  return new Date().toLocaleString("sv-SE", { timeZone: "Europe/Warsaw" }).replace(" ", "T");
+  return new Date()
+    .toLocaleString("sv-SE", { timeZone: "Europe/Warsaw" })
+    .replace(" ", "T");
 }
 
 /** Generic non-blocking append to a JSONL file in logs/ */
@@ -31,7 +33,9 @@ function appendJsonl(fileName: string, data: object): void {
 
   fs.mkdir(logsDir, { recursive: true })
     .then(() => fs.appendFile(filePath, entry, "utf-8"))
-    .catch((err) => console.error(`[logger] Failed to write to ${fileName}:`, err));
+    .catch((err) =>
+      console.error(`[logger] Failed to write to ${fileName}:`, err),
+    );
 }
 
 /**

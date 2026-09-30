@@ -8,16 +8,14 @@ interface ChatInputProps {
   onSendMessage: (message: string) => void;
   onClearChat: () => void;
   isDisabled?: boolean;
+  maxMessageLength: number;
 }
-
-// TODO: wszystko ujednolicić z .env (ma być jedno miejsce na tego typu dane) - jeśli nie ma przeciwskazań to może w constants.ts
-// Must match MAX_MESSAGE_LENGTH in lib/security/validate-chat-request.ts
-const MAX_QUESTION_LENGTH = 800;
 
 export function ChatInput({
   onSendMessage,
   onClearChat,
   isDisabled = false,
+  maxMessageLength,
 }: ChatInputProps) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -76,7 +74,7 @@ export function ChatInput({
           value={value}
           rows={1}
           disabled={isDisabled}
-          maxLength={MAX_QUESTION_LENGTH}
+          maxLength={maxMessageLength}
           aria-label="Ask a question"
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
@@ -92,7 +90,7 @@ export function ChatInput({
         />
 
         <span className="absolute right-3 bottom-2 bg-app-mid-dark/10 px-1.5 py-0.5 text-[10px] text-app-text">
-          {count}/{MAX_QUESTION_LENGTH}
+          {count}/{maxMessageLength}
         </span>
       </div>
 

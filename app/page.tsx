@@ -4,6 +4,7 @@ import Landing from "@/components/landing/Landing";
 import ChatSection from "@/components/chat/ChatSection";
 import Projects from "@/components/projects/Projects";
 import Footer from "@/components/footer/Footer";
+import { chatConfig } from "@/lib/chat/config";
 
 export default function Home() {
   return (
@@ -12,7 +13,10 @@ export default function Home() {
       <main className="flex flex-col items-center justify-center px-4 leading-relaxed">
         <Background />
         <Landing />
-        <ChatSection />
+        <ChatSection
+          maxMessageLength={chatConfig.maxMessageLength}
+          maxMessages={chatConfig.maxMessages}
+        />
         <Projects />
       </main>
       <Footer />
