@@ -1,7 +1,7 @@
 "use client";
 
 // Steruje sekwencyjnym pojawianiem się animowanych dzieci i udostępnia wspólne warianty animacji.
-import { Children, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { motion, type Variants } from "motion/react";
 
 interface StaggerRevealProps {

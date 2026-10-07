@@ -5,14 +5,15 @@ import { faHexagonNodes } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { motion } from "motion/react";
 import FaWrapper from "@/components/ui/FaWrapper";
-import Appear from "@/components/ui/Appear";
+import Reveal from "@/components/ui/Reveal";
 
 import { LINKS } from "@/lib/constants";
 import StaggerReveal, { childVariants } from "@/components/ui/StaggerReveal";
 
 export default function NavBar() {
   return (
-    <Appear
+    <Reveal
+      variant="fade"
       delay={0.3}
       className="sticky top-0 z-50 w-full border-b border-app-mid-dark bg-app-background/70 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
@@ -46,6 +47,6 @@ export default function NavBar() {
           ))}
         </StaggerReveal>
       </div>
-    </Appear>
+    </Reveal>
   );
 }
