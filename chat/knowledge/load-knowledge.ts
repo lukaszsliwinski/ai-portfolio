@@ -1,7 +1,7 @@
-// Wczytuje po stronie serwera pliki Markdown i JSON tworzące bazę wiedzy o autorze portfolio.
+// Wczytuje po stronie serwera pliki Markdown tworzące bazę wiedzy o autorze portfolio.
 import fs from "fs/promises";
 import path from "path";
-import type { DeveloperMeta, KnowledgeData } from "./types";
+import type { KnowledgeData } from "./types";
 
 /**
  * Loads developer knowledge files from the local filesystem.
@@ -18,7 +18,6 @@ export async function loadKnowledge(): Promise<KnowledgeData> {
       projects,
       interests,
       recruiterFaq,
-      metaRaw,
     ] = await Promise.all([
       fs.readFile(path.join(contentDir, "profile.md"), "utf-8"),
       fs.readFile(path.join(contentDir, "experience.md"), "utf-8"),
@@ -26,10 +25,7 @@ export async function loadKnowledge(): Promise<KnowledgeData> {
       fs.readFile(path.join(contentDir, "projects.md"), "utf-8"),
       fs.readFile(path.join(contentDir, "interests.md"), "utf-8"),
       fs.readFile(path.join(contentDir, "recruiter-faq.md"), "utf-8"),
-      fs.readFile(path.join(contentDir, "meta.json"), "utf-8"),
     ]);
-
-    const meta: DeveloperMeta = JSON.parse(metaRaw);
 
     return {
       profile,
@@ -38,7 +34,6 @@ export async function loadKnowledge(): Promise<KnowledgeData> {
       projects,
       interests,
       recruiterFaq,
-      meta,
     };
   } catch (error) {
     console.error("Error loading knowledge content files:", error);

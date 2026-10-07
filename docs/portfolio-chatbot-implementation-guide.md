@@ -25,7 +25,7 @@ Next.js App Router
   ├─ Hero chatbot UI
   ├─ Chat client state
   ├─ /api/chat server endpoint
-  ├─ Content loader for Markdown/JSON knowledge files
+  ├─ Content loader for Markdown knowledge files
   ├─ Assistant policy and prompt construction
   ├─ Gemini streaming integration
   ├─ Input validation and rate limiting
@@ -82,14 +82,13 @@ components/
   ui/
     ...
 
-content/
+chat/knowledge/data/
   profile.md
   experience.md
   skills.md
   projects.md
   interests.md
   recruiter-faq.md
-  meta.json
 
 lib/
   ai/
@@ -118,27 +117,26 @@ If the starter project does not use `src/`, follow the existing project conventi
 
 ## Knowledge files
 
-Create initial placeholder content files under `content/`.
+Create initial placeholder content files under `chat/knowledge/data/`.
 
 The files should contain realistic structure but may use placeholder content until the developer fills in real data.
 
 Required files:
 
 ```txt
-content/profile.md
-content/experience.md
-content/skills.md
-content/projects.md
-content/interests.md
-content/recruiter-faq.md
-content/meta.json
+chat/knowledge/data/profile.md
+chat/knowledge/data/experience.md
+chat/knowledge/data/skills.md
+chat/knowledge/data/projects.md
+chat/knowledge/data/interests.md
+chat/knowledge/data/recruiter-faq.md
 ```
 
 Suggested content responsibilities:
 
 ### `profile.md`
 
-General developer summary, positioning, preferred frontend direction, professional style.
+General developer summary, positioning, preferred frontend direction, professional style, name, role, location, main technologies, languages, and contact information.
 
 ### `experience.md`
 
@@ -160,22 +158,6 @@ Professional interests and selected personal interests that help present the dev
 
 Prepared answers for common recruiter questions, including a fallback for contract, salary, and availability questions.
 
-### `meta.json`
-
-Structured metadata used by the UI or content loader.
-
-Example shape:
-
-```json
-{
-  "displayName": "Developer",
-  "role": "Frontend Developer",
-  "location": "Poland",
-  "mainStack": ["React", "Next.js", "TypeScript", "Tailwind CSS"],
-  "languages": ["Polish", "English"]
-}
-```
-
 Do not include private data, secrets, API keys, confidential project details, or sensitive personal information.
 
 ## Content loading
@@ -184,7 +166,7 @@ Implement a server-side content loader.
 
 Requirements:
 
-- load content from local Markdown and JSON files,
+- load content from local Markdown files,
 - run only on the server,
 - avoid exposing raw file access logic to the client,
 - return a normalized knowledge object or formatted knowledge string,
@@ -485,7 +467,7 @@ Do not introduce a large test framework solely for MVP unless the project alread
 
 ### Step 2: Add documentation and content structure
 
-- Add `content/` files.
+- Add `chat/knowledge/data/` files.
 - Add `.env.example`.
 - Add or update project docs if needed.
 
@@ -505,7 +487,7 @@ Do not introduce a large test framework solely for MVP unless the project alread
 
 ### Step 5: Add content loader and assistant context
 
-- Load Markdown/JSON content server-side.
+- Load Markdown content server-side.
 - Build the assistant context from local files.
 - Add behavior policy enforcement through server-side prompt construction.
 
@@ -552,7 +534,7 @@ The implementation is complete when:
 - responses stream or degrade gracefully,
 - assistant messages render safe markdown,
 - chat can be cleared,
-- knowledge comes from Markdown/JSON files,
+- knowledge comes from Markdown files,
 - there is no content database,
 - the assistant stays within the developer portfolio domain,
 - invalid input is rejected,

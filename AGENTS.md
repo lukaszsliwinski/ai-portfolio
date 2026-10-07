@@ -22,7 +22,7 @@ Do not implement future-scope features unless explicitly requested.
 - `chat/model/` contains the Gemini integration and system prompt.
 - `chat/security/` contains request validation and rate limiting.
 - `chat/knowledge/` contains knowledge loading, formatting, and types.
-- `chat/knowledge/data/` contains the chatbot's Markdown knowledge files and `meta.json`.
+- `chat/knowledge/data/` contains the chatbot's Markdown knowledge files.
 - `lib/` contains shared utilities and constants.
 
 The documentation may still reference the previous `lib/ai/`, `lib/chat/`, `lib/security/`, `lib/knowledge/`, and root `content/` paths. Use the current paths above when locating or modifying files; the documented MVP scope and acceptance criteria still apply.

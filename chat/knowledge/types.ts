@@ -1,17 +1,4 @@
-// Definiuje strukturę metadanych autora oraz komplet danych składających się na bazę wiedzy chatu.
-export interface DeveloperMeta {
-  displayName: string;
-  role: string;
-  location: string;
-  mainStack: string[];
-  languages: string[];
-  contact: {
-    email: string;
-    github: string;
-    linkedin: string;
-  };
-}
-
+// Definiuje komplet danych tworzących bazę wiedzy chatu.
 export interface KnowledgeData {
   profile: string;
   experience: string;
@@ -19,5 +6,4 @@ export interface KnowledgeData {
   projects: string;
   interests: string;
   recruiterFaq: string;
-  meta: DeveloperMeta;
 }

@@ -83,24 +83,23 @@ Example:
 
 The MVP should not use a database.
 
-Knowledge should be stored in repository files, using Markdown and JSON.
+Knowledge should be stored in repository files, using Markdown.
 
 Recommended structure:
 
 ```txt
-content/
+chat/knowledge/data/
   profile.md
   experience.md
   skills.md
   projects.md
   interests.md
   recruiter-faq.md
-  meta.json
 ```
 
 Markdown files should contain human-editable descriptions.
 
-JSON should be used only for structured metadata that may be useful for the UI or content loading.
+Basic profile details, technologies, languages, and contact information are stored in `profile.md` alongside the professional summary. No separate JSON metadata file is required.
 
 The data is expected to change rarely. Updates can happen through normal code changes and redeployment.
 
