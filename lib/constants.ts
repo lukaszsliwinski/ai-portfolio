@@ -1,3 +1,4 @@
+// Przechowuje statyczne dane interfejsu portfolio, w tym linki, technologie, treści chatu i projekty.
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 
 

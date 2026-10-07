@@ -1,3 +1,4 @@
+// Prezentuje pojedynczy projekt wraz z opisem, wizualizacją ekranu oraz linkami do kodu i wersji online.
 import Image from "next/image";
 import { faCode, faLink } from "@fortawesome/free-solid-svg-icons";
 

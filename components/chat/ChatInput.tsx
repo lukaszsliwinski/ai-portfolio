@@ -1,5 +1,6 @@
 "use client";
 
+// Obsługuje pole wpisywania wiadomości, limit znaków, wysyłanie oraz czyszczenie rozmowy.
 import { useEffect, useRef, useState } from "react";
 import { faArrowUp, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import FaWrapper from "@/components/ui/FaWrapper";

@@ -1,3 +1,4 @@
+// Renderuje stylizowany odnośnik działający jako przycisk, z opcjonalną ikoną i obsługą linków zewnętrznych.
 import Link from "next/link";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import FaWrapper from "./FaWrapper";

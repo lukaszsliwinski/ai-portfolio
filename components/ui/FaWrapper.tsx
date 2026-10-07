@@ -1,3 +1,4 @@
+// Ujednolica renderowanie oraz rozmiar ikon Font Awesome używanych w interfejsie.
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 

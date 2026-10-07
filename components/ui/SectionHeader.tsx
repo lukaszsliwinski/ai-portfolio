@@ -1,3 +1,4 @@
+// Renderuje spójny nagłówek sekcji z opcjonalnym podtytułem, wyróżnieniem i mniejszym wariantem rozmiaru.
 import { cn } from "@/lib/utils";
 
 interface SectionHeaderProps {

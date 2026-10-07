@@ -1,5 +1,6 @@
 "use client";
 
+// Zarządza stanem rozmowy, komunikacją strumieniową z API oraz składa główną sekcję chatu.
 import { useState, useRef } from "react";
 
 import ChatWindow from "./ChatWindow";

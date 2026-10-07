@@ -1,3 +1,4 @@
+// Koordynuje przygotowanie odpowiedzi chatu: ładuje wiedzę, buduje prompt i uruchamia strumień Gemini.
 import { streamChat } from "@/lib/ai/provider";
 import { getSystemPrompt } from "@/lib/ai/system-prompt";
 import { formatKnowledge } from "@/lib/knowledge/format-knowledge";

@@ -1,3 +1,4 @@
+// Integruje aplikację z Gemini: mapuje historię rozmowy, strumieniuje odpowiedź i zamienia błędy API na komunikaty dla użytkownika.
 import { GoogleGenAI } from "@google/genai";
 import { chatConfig } from "@/lib/chat/config";
 import { STREAM_ERROR_PREFIX } from "@/lib/chat/stream-protocol";

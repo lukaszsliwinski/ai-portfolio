@@ -1,3 +1,4 @@
+// Zamienia ustrukturyzowane dane portfolio na tekstowy kontekst Markdown przekazywany do promptu Gemini.
 import type { KnowledgeData } from "./types";
 
 /**

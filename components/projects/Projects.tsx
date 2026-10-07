@@ -1,3 +1,4 @@
+// Buduje sekcję projektów na podstawie danych konfiguracyjnych i komponentów kart projektu.
 import ProjectCard from "./ProjectCard";
 import { PROJECTS } from "@/lib/constants";
 

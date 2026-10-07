@@ -1,5 +1,6 @@
 "use client";
 
+// Zapewnia wielokrotnego użytku animację pojawienia się elementu przez zmianę przezroczystości po wejściu w viewport.
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
 

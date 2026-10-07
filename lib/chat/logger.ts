@@ -1,3 +1,4 @@
+// Zapisuje wiadomości i zdarzenia błędów chatu do lokalnych plików JSONL w sposób nieblokujący odpowiedzi API.
 import fs from "fs/promises";
 import path from "path";
 

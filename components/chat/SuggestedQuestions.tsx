@@ -1,3 +1,4 @@
+// Wyświetla listę sugerowanych pytań i przekazuje wybrane pytanie do mechanizmu wysyłania wiadomości.
 import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "motion/react";
 import FaWrapper from "@/components/ui/FaWrapper";

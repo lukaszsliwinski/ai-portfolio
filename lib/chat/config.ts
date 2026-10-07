@@ -1,10 +1,11 @@
+// Odczytuje i waliduje wymagane zmienne środowiskowe konfigurujące Gemini oraz limity chatu.
 type ChatEnvName =
   | "CHAT_RATE_LIMIT_REQUESTS"
   | "CHAT_RATE_LIMIT_WINDOW_HOURS"
   | "CHAT_MAX_MESSAGE_LENGTH"
   | "CHAT_MAX_MESSAGES"
   | "GEMINI_API_KEY"
-  | "LLM_MODEL";
+  | "LLM_MODEL";  // TODO: to do usunięcia
 
 function readRequiredString(name: ChatEnvName): string {
   const value = process.env[name]?.trim();

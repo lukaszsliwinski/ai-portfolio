@@ -1,5 +1,6 @@
 "use client";
 
+// Zapewnia wielokrotnego użytku animację odsłaniania elementu z przezroczystością i ruchem pionowym.
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
 

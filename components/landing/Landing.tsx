@@ -1,5 +1,6 @@
 "use client";
 
+// Renderuje sekcję powitalną portfolio z opisem, technologiami i odnośnikami do dalszych części strony.
 import Image from "next/image";
 import { motion } from "motion/react";
 import { faLaptopCode } from "@fortawesome/free-solid-svg-icons";

@@ -1,3 +1,4 @@
+// Wyświetla awatar asystenta oraz opcjonalny wskaźnik jego aktywności.
 import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
 import FaWrapper from "@/components/ui/FaWrapper";
 

@@ -1,3 +1,4 @@
+// Definiuje strukturę metadanych autora oraz komplet danych składających się na bazę wiedzy chatu.
 export interface DeveloperMeta {
   displayName: string;
   role: string;

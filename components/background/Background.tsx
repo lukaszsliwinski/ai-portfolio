@@ -1,5 +1,6 @@
 "use client";
 
+// Renderuje animowane tło 3D z gwiazdami, które reaguje na przewijanie i zmianę rozmiaru okna.
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import Appear from "@/components/ui/Appear";

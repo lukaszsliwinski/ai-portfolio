@@ -1,3 +1,4 @@
+// Wczytuje po stronie serwera pliki Markdown i JSON tworzące bazę wiedzy o autorze portfolio.
 import fs from "fs/promises";
 import path from "path";
 import type { DeveloperMeta, KnowledgeData } from "./types";

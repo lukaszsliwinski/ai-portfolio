@@ -1,5 +1,6 @@
 "use client";
 
+// Buduje okno rozmowy z historią wiadomości, automatycznym przewijaniem, stanami ładowania i formularzem.
 import { useEffect, useRef } from "react";
 import type { ChatUiMessage } from "./types";
 import { ChatMessage } from "./ChatMessage";

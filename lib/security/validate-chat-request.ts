@@ -1,3 +1,4 @@
+// Waliduje strukturę, role, zawartość i limity historii wiadomości przesyłanej do endpointu chatu.
 import { chatConfig } from "@/lib/chat/config";
 import { CHAT_ROLES } from "@/lib/chat/types";
 import type {

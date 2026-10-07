@@ -1,3 +1,4 @@
+// Buduje prompt systemowy określający rolę, zakres wiedzy, styl odpowiedzi i zabezpieczenia asystenta.
 /**
  * Generates the system prompt instructing the AI assistant on its role,
  * behavior constraints, security rules, and providing the developer's knowledge base.

@@ -1,3 +1,4 @@
+// Obsługuje endpoint POST chatu: zabezpiecza i waliduje żądanie, pilnuje limitów oraz zwraca strumień odpowiedzi Gemini.
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { validateChatRequest } from "@/lib/security/validate-chat-request";

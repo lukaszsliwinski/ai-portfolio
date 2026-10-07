@@ -1,5 +1,6 @@
 "use client";
 
+// Renderuje przyklejony pasek nawigacji z identyfikacją portfolio i linkami do profili zewnętrznych.
 import { faHexagonNodes } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { motion } from "motion/react";
