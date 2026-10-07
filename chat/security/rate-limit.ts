@@ -1,5 +1,5 @@
 // Ogranicza liczbę żądań chatu dla adresu IP przy użyciu prostego magazynu danych w pamięci procesu.
-import { chatConfig } from "@/lib/chat/config";
+import { chatConfig } from "@/chat/config";
 
 interface RateLimitEntry {
   count: number;

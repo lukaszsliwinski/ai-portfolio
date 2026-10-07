@@ -4,7 +4,7 @@ import Landing from "@/components/landing/Landing";
 import ChatSection from "@/components/chat/ChatSection";
 import Projects from "@/components/projects/Projects";
 import Footer from "@/components/footer/Footer";
-import { chatConfig } from "@/lib/chat/config";
+import { chatConfig } from "@/chat/config";
 
 export default function Home() {
   return (

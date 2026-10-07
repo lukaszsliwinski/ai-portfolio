@@ -1,8 +1,8 @@
 // Integruje aplikację z Gemini: mapuje historię rozmowy, strumieniuje odpowiedź i zamienia błędy API na komunikaty dla użytkownika.
 import { GoogleGenAI } from "@google/genai";
-import { chatConfig } from "@/lib/chat/config";
-import { STREAM_ERROR_PREFIX } from "@/lib/chat/stream-protocol";
-import type { LLMMessage } from "@/lib/chat/types";
+import { chatConfig } from "@/chat/config";
+import { STREAM_ERROR_PREFIX } from "@/lib/constants";
+import type { LLMMessage } from "@/chat/types";
 
 /** Extracts a friendly user-facing error message from Google API errors. */
 function parseGoogleError(error: unknown): string {

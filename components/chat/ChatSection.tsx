@@ -10,8 +10,7 @@ import type { ChatUiMessage } from "./types";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/ui/Reveal";
 
-import { STREAM_ERROR_PREFIX } from "@/lib/chat/stream-protocol";
-import { CHAT_TEXT, DEFAULT_WELCOME_MESSAGE } from "@/lib/constants";
+import { CHAT_TEXT, DEFAULT_WELCOME_MESSAGE, STREAM_ERROR_PREFIX } from "@/lib/constants";
 
 interface ChatSectionProps {
   maxMessageLength: number;

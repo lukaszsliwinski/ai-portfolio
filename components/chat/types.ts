@@ -1,5 +1,5 @@
 // Definiuje typ wiadomości przechowywanej i wyświetlanej po stronie interfejsu chatu.
-import type { ChatRole } from "@/lib/chat/types";
+import type { ChatRole } from "@/chat/types";
 
 export interface ChatUiMessage {
   id: string;

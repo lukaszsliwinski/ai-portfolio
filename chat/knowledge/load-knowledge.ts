@@ -8,7 +8,7 @@ import type { DeveloperMeta, KnowledgeData } from "./types";
  * This function is intended to run only on the server.
  */
 export async function loadKnowledge(): Promise<KnowledgeData> {
-  const contentDir = path.join(process.cwd(), "content");
+  const contentDir = path.join(process.cwd(), "chat", "knowledge", "data");
 
   try {
     const [

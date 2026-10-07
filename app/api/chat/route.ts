@@ -1,10 +1,10 @@
 // Obsługuje endpoint POST chatu: zabezpiecza i waliduje żądanie, pilnuje limitów oraz zwraca strumień odpowiedzi Gemini.
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { validateChatRequest } from "@/lib/security/validate-chat-request";
-import { checkRateLimit } from "@/lib/security/rate-limit";
-import { createChatStream } from "@/lib/chat/chat-service";
-import { logChatMessage, logErrorEvent } from "@/lib/chat/logger";
+import { validateChatRequest } from "@/chat/security/validate-request";
+import { checkRateLimit } from "@/chat/security/rate-limit";
+import { createChatStream } from "@/chat/service";
+import { logChatMessage, logErrorEvent } from "@/chat/logger";
 
 /** Formats seconds into human-readable hours and minutes rounded up. */
 function formatWaitTime(totalSeconds: number): string {

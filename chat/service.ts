@@ -1,8 +1,8 @@
 // Koordynuje przygotowanie odpowiedzi chatu: ładuje wiedzę, buduje prompt i uruchamia strumień Gemini.
-import { streamChat } from "@/lib/ai/provider";
-import { getSystemPrompt } from "@/lib/ai/system-prompt";
-import { formatKnowledge } from "@/lib/knowledge/format-knowledge";
-import { loadKnowledge } from "@/lib/knowledge/load-knowledge";
+import { streamChat } from "@/chat/model/gemini";
+import { getSystemPrompt } from "@/chat/model/system-prompt";
+import { formatKnowledge } from "@/chat/knowledge/format-knowledge";
+import { loadKnowledge } from "@/chat/knowledge/load-knowledge";
 import type { ChatRequestMessage, LLMMessage } from "./types";
 
 /** Builds the knowledge-grounded prompt and starts a streamed Gemini response. */
