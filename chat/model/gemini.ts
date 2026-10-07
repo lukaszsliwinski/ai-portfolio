@@ -1,6 +1,7 @@
 // Integruje aplikację z Gemini: mapuje historię rozmowy, strumieniuje odpowiedź i zamienia błędy API na komunikaty dla użytkownika.
 import { GoogleGenAI } from "@google/genai";
 import { chatConfig } from "@/chat/config";
+import { logErrorEvent } from "@/chat/logger";
 import { STREAM_ERROR_PREFIX } from "@/lib/constants";
 import type { LLMMessage } from "@/chat/types";
 
@@ -64,6 +65,11 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
         }
       } catch (error) {
         console.error("[provider] Gemini stream error:", error);
+        logErrorEvent({
+          ip: "server",
+          type: "api_error",
+          error: `Gemini stream error: ${error instanceof Error ? error.message : "An unexpected error occurred."}`,
+        });
         const userError = parseGoogleError(error);
         controller.enqueue(
           encoder.encode(`${STREAM_ERROR_PREFIX}${userError}`),
