@@ -2,10 +2,13 @@
 import { chatConfig } from "@/chat/config";
 import { CHAT_ROLES } from "@/chat/types";
 import type {
-  ChatRequest,
   ChatRequestMessage,
   ChatRole,
 } from "@/chat/types";
+
+interface ChatRequest {
+  messages: ChatRequestMessage[];
+}
 
 type ValidationResult =
   { isValid: true; data: ChatRequest } | { isValid: false; error: string };

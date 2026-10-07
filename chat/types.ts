@@ -8,10 +8,6 @@ export interface ChatRequestMessage {
   content: string;
 }
 
-export interface ChatRequest {
-  messages: ChatRequestMessage[];
-}
-
 export interface LLMMessage {
   role: ChatRole | "system";
   content: string;
