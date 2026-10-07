@@ -74,6 +74,7 @@ app/
   globals.css
 
 components/
+  background/
   navigation/
   landing/
   chat/
@@ -82,38 +83,39 @@ components/
   ui/
     ...
 
-chat/knowledge/data/
-  profile.md
-  experience.md
-  skills.md
-  projects.md
-  interests.md
-  recruiter-faq.md
-
-lib/
-  ai/
-    provider.ts
+chat/
+  service.ts
+  config.ts
+  logger.ts
+  types.ts
+  model/
+    gemini.ts
     system-prompt.ts
-  chat/
-    chat-service.ts
-    config.ts
-    logger.ts
-    stream-protocol.ts
-    types.ts
+  security/
+    rate-limit.ts
+    validate-request.ts
   knowledge/
     load-knowledge.ts
     format-knowledge.ts
-  security/
-    rate-limit.ts
-    validate-chat-request.ts
+    types.ts
+    data/
+      profile.md
+      experience.md
+      skills.md
+      projects.md
+      interests.md
+      recruiter-faq.md
+
+lib/
+  constants.ts
   utils.ts
 
 docs/
-  chatbot-mvp-plan.md
-  chatbot-implementation-guide.md
+  portfolio-chatbot-mvp-plan.md
+  portfolio-chatbot-implementation-guide.md
 ```
 
-If the starter project does not use `src/`, follow the existing project convention.
+The project uses root-level directories without a `src/` directory. Follow this existing convention.
 
 ## Knowledge files
 
@@ -184,10 +186,10 @@ Keep all Gemini API calls on the server.
 Keep the Gemini streaming implementation in:
 
 ```txt
-lib/ai/provider.ts
+chat/model/gemini.ts
 ```
 
-The chat flow should call Gemini through `lib/chat/chat-service.ts`. Client Components must not import the Gemini SDK or the server-side provider module.
+The chat flow should call Gemini through `chat/service.ts`. Client Components must not import the Gemini SDK or the server-side provider module.
 
 Use Gemini's streaming API for assistant responses.
 
@@ -209,7 +211,7 @@ Implement a server endpoint for chat messages.
 Suggested route:
 
 ```txt
-src/app/api/chat/route.ts
+app/api/chat/route.ts
 ```
 
 The endpoint should:
@@ -251,25 +253,26 @@ Exact values may be adjusted during implementation.
 
 The public endpoint must include rate limiting.
 
-Preferred MVP options:
+For the current MVP, use the in-memory limiter for local development and the VPS deployment with a single application process. This is an accepted implementation trade-off:
 
-1. Use an external or managed rate-limit store if already available.
-2. Use Redis if available in the VPS/Docker environment.
-3. Use a simple in-memory fallback only for local development, not as a reliable production solution.
+- Limits reset when the application process restarts, including redeployments.
+- Each process has its own counters; limits are not shared across multiple processes or instances, even on the same VPS.
+
+Redis is not required at this stage. Revisit the storage choice if limits must survive application restarts or be shared across multiple processes or instances.
 
 Rate limiting should be implemented in:
 
 ```txt
-lib/chat/rate-limit.ts
+chat/security/rate-limit.ts
 ```
 
 Suggested initial policy:
 
 ```txt
-10 requests per 10 minutes per IP
+10 requests per hour per IP
 ```
 
-The implementation should make the policy easy to change.
+The policy is configured by `CHAT_RATE_LIMIT_REQUESTS` and `CHAT_RATE_LIMIT_WINDOW_HOURS` in `chat/config.ts`; the values above are an example, not hard-coded limits.
 
 ## Assistant behavior policy
 
@@ -499,9 +502,9 @@ Do not introduce a large test framework solely for MVP unless the project alread
 
 ### Step 7: Add rate limiting
 
-- Implement rate limit module.
-- Use production-capable store if configured.
-- Provide safe local-development fallback.
+- Keep the in-memory rate limit module for local development and the single-process VPS deployment.
+- Document that counters reset after restarts and are not shared across processes.
+- Defer Redis unless shared counters or persistence across application restarts become necessary.
 
 ### Step 8: Add safe markdown rendering
 

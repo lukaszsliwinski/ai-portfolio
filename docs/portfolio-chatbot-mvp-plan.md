@@ -109,7 +109,7 @@ No application database is required for the MVP.
 
 The MVP should not store chat conversations, user identities, recruiter data, analytics, or content in a database.
 
-A lightweight technical store may be used only if needed for rate limiting. For example, Redis can be introduced as an implementation detail, but it is not part of the chatbot knowledge model.
+The current MVP uses an in-memory rate limiter for local development and a single application process on the VPS. Limits reset after process restarts and are not shared across processes or instances; these limitations are accepted for this deployment. Redis is deferred and may be introduced if shared counters or persistence across application restarts become necessary. It is not part of the chatbot knowledge model.
 
 ## Gemini strategy
 

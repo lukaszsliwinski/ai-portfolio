@@ -25,7 +25,7 @@ Do not implement future-scope features unless explicitly requested.
 - `chat/knowledge/data/` contains the chatbot's Markdown knowledge files.
 - `lib/` contains shared utilities and constants.
 
-The documentation may still reference the previous `lib/ai/`, `lib/chat/`, `lib/security/`, `lib/knowledge/`, and root `content/` paths. Use the current paths above when locating or modifying files; the documented MVP scope and acceptance criteria still apply.
+Use the current paths above when locating or modifying files; the documented MVP scope and acceptance criteria apply.
 
 ## Implementation guidelines
 
