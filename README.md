@@ -20,6 +20,17 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Project structure and documentation
+
+- `app/` contains the pages and layout; `app/api/chat/route.ts` handles chat requests.
+- `components/` contains the portfolio sections, chat UI, and reusable UI components.
+- `chat/` contains the chat service, configuration, logging, and shared types; `chat/model/provider.ts` integrates Gemini, and `chat/security/` handles validation and rate limiting.
+- `chat/knowledge.ts` loads and formats the Markdown knowledge files in `chat/data/`.
+- `lib/` contains shared utilities and constants; `public/` contains static assets.
+- `Dockerfile` and `docker-compose.yml` define the container deployment.
+
+See the [MVP plan](docs/portfolio-chatbot-mvp-plan.md) for product scope and the [implementation guide](docs/portfolio-chatbot-implementation-guide.md) for the current file structure, architecture, and acceptance criteria. [AGENTS.md](AGENTS.md) contains repository instructions; `CLAUDE.md` references those instructions.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

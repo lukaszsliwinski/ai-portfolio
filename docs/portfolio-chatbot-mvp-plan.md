@@ -85,10 +85,10 @@ The MVP should not use a database.
 
 Knowledge should be stored in repository files, using Markdown.
 
-Recommended structure:
+Current knowledge file structure:
 
 ```txt
-chat/knowledge/data/
+chat/data/
   profile.md
   experience.md
   skills.md
@@ -98,6 +98,8 @@ chat/knowledge/data/
 ```
 
 Markdown files should contain human-editable descriptions.
+
+`chat/knowledge.ts` loads and formats these files server-side through `getKnowledge()` for use by `chat/service.ts`.
 
 Basic profile details, technologies, languages, and contact information are stored in `profile.md` alongside the professional summary. No separate JSON metadata file is required.
 

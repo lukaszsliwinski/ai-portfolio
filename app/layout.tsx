@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-// TODO: do sprawdzenia czy czcionki są wczytywane poprawnie i obie wersje są używane
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

@@ -7,20 +7,20 @@ import type { LLMMessage } from "@/chat/types";
 
 /** Extracts a friendly user-facing error message from Google API errors. */
 function parseGoogleError(error: unknown): string {
-  if (!(error instanceof Error))
+  if (!(error instanceof Error)) {
     return "The AI assistant encountered an unexpected error.";
+  }
 
   const msg = error.message.toLowerCase();
-  if (
-    msg.includes("429") ||
-    msg.includes("resource_exhausted") ||
-    msg.includes("quota")
-  ) {
+
+  if (msg.includes("429") || msg.includes("resource_exhausted") || msg.includes("quota")) {
     return "The AI provider is currently rate-limited by Google API quota. Please try again in a moment.";
   }
+
   if (msg.includes("404") || msg.includes("not_found")) {
     return "The configured AI model is unavailable.";
   }
+
   if (msg.includes("403") || msg.includes("permission_denied")) {
     return "Invalid API key or unauthorized access to AI model.";
   }

@@ -3,16 +3,15 @@ import React from "react";
 import AssistantAvatar from "./AssistantAvatar";
 import type { ChatUiMessage } from "./types";
 import { cn } from "@/lib/utils";
-// TODO: dokładniej przeanalizować
+
 interface ChatMessageProps {
   message: ChatUiMessage;
 }
 
 /**
- * Safely parses inline markdown elements (**bold**, `code`) into React elements
- * without using dangerouslySetInnerHTML.
+ * Safely parses **bold** into React elements without using dangerouslySetInnerHTML.
  */
-function parseInlineFormatting(text: string): React.ReactNode[] {
+function parseBoldFormatting(text: string): React.ReactNode[] {
   const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g);
   return parts.map((part, index) => {
     if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
@@ -20,17 +19,6 @@ function parseInlineFormatting(text: string): React.ReactNode[] {
         <strong key={index} className="font-semibold">
           {part.slice(2, -2)}
         </strong>
-      );
-    }
-    if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
-      // TODO: czy <code> potrzebny jeśli chat powinien być zabezpieczony przed udzielaniem informacji innych niż w danych?
-      return (
-        <code
-          key={index}
-          className="rounded bg-app-mid-dark px-1.5 py-0.5 font-mono text-xs"
-        >
-          {part.slice(1, -1)}
-        </code>
       );
     }
     return part;
@@ -53,7 +41,7 @@ function FormattedContent({ content }: { content: string }) {
           return (
             <div key={lineIndex} className="flex items-start gap-2 pl-1">
               <span className="text-app-text select-none">•</span>
-              <span>{parseInlineFormatting(trimmed.slice(2))}</span>
+              <span>{parseBoldFormatting(trimmed.slice(2))}</span>
             </div>
           );
         }
@@ -64,7 +52,7 @@ function FormattedContent({ content }: { content: string }) {
         }
 
         // Standard text paragraph
-        return <p key={lineIndex}>{parseInlineFormatting(line)}</p>;
+        return <p key={lineIndex}>{parseBoldFormatting(line)}</p>;
       })}
     </div>
   );

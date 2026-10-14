@@ -58,11 +58,9 @@ The UI must include this note:
 AI assistant speaking on behalf of the developer.
 ```
 
-## Recommended repository structure
+## Current repository structure
 
-Adjust to the actual project structure after checking the installed Next.js version and conventions.
-
-Suggested structure:
+The following structure reflects the current files and directories. Follow it when locating or modifying the implementation.
 
 ```txt
 app/
@@ -72,12 +70,20 @@ app/
   layout.tsx
   page.tsx
   globals.css
+  favicon.ico
 
 components/
   background/
   navigation/
   landing/
   chat/
+    AssistantAvatar.tsx
+    ChatInput.tsx
+    ChatMessage.tsx
+    ChatSection.tsx
+    ChatWindow.tsx
+    SuggestedQuestions.tsx
+    types.ts
   projects/
   footer/
   ui/
@@ -88,23 +94,20 @@ chat/
   config.ts
   logger.ts
   types.ts
+  knowledge.ts
   model/
-    gemini.ts
+    provider.ts
     system-prompt.ts
   security/
     rate-limit.ts
     validate-request.ts
-  knowledge/
-    load-knowledge.ts
-    format-knowledge.ts
-    types.ts
-    data/
-      profile.md
-      experience.md
-      skills.md
-      projects.md
-      interests.md
-      recruiter-faq.md
+  data/
+    profile.md
+    experience.md
+    skills.md
+    projects.md
+    interests.md
+    recruiter-faq.md
 
 lib/
   constants.ts
@@ -113,25 +116,41 @@ lib/
 docs/
   portfolio-chatbot-mvp-plan.md
   portfolio-chatbot-implementation-guide.md
+
+public/
+AGENTS.md
+CLAUDE.md
+README.md
+TODOs.txt
+Dockerfile
+docker-compose.yml
+next.config.ts
+package.json
+package-lock.json
+tsconfig.json
 ```
 
 The project uses root-level directories without a `src/` directory. Follow this existing convention.
 
+`chat/types.ts` defines shared request and model message types. `components/chat/types.ts` defines UI message types and reuses the shared chat role. Knowledge types are internal to `chat/knowledge.ts`.
+
+`public/` contains static assets. `chat/logger.ts` creates runtime JSONL files in `logs/`, which is ignored by Git; `docker-compose.yml` mounts the host's `./logs` directory at `/app/logs` in the container.
+
 ## Knowledge files
 
-Create initial placeholder content files under `chat/knowledge/data/`.
+Maintain the existing Markdown knowledge files under `chat/data/`.
 
 The files should contain realistic structure but may use placeholder content until the developer fills in real data.
 
 Required files:
 
 ```txt
-chat/knowledge/data/profile.md
-chat/knowledge/data/experience.md
-chat/knowledge/data/skills.md
-chat/knowledge/data/projects.md
-chat/knowledge/data/interests.md
-chat/knowledge/data/recruiter-faq.md
+chat/data/profile.md
+chat/data/experience.md
+chat/data/skills.md
+chat/data/projects.md
+chat/data/interests.md
+chat/data/recruiter-faq.md
 ```
 
 Suggested content responsibilities:
@@ -164,7 +183,7 @@ Do not include private data, secrets, API keys, confidential project details, or
 
 ## Content loading
 
-Implement a server-side content loader.
+The server-side content loader is implemented in `chat/knowledge.ts`. Its internal `loadKnowledge()` reads the six Markdown files from `chat/data/`, and `formatKnowledge()` combines them into the assistant's factual context. The public `getKnowledge()` function returns the formatted string and is called by `chat/service.ts`, which passes it to `getSystemPrompt()` in `chat/model/system-prompt.ts`.
 
 Requirements:
 
@@ -186,7 +205,7 @@ Keep all Gemini API calls on the server.
 Keep the Gemini streaming implementation in:
 
 ```txt
-chat/model/gemini.ts
+chat/model/provider.ts
 ```
 
 The chat flow should call Gemini through `chat/service.ts`. Client Components must not import the Gemini SDK or the server-side provider module.
@@ -206,9 +225,7 @@ Do not expose the Gemini API key to the browser.
 
 ## API endpoint
 
-Implement a server endpoint for chat messages.
-
-Suggested route:
+The chat server endpoint is implemented in:
 
 ```txt
 app/api/chat/route.ts
@@ -227,6 +244,8 @@ The endpoint should:
 9. return clear error responses for invalid requests.
 
 ## Input validation
+
+Request validation lives in `chat/security/validate-request.ts`; shared request types live in `chat/types.ts`.
 
 Use schema validation for incoming requests.
 
@@ -428,6 +447,8 @@ Do not overbuild deployment automation unless explicitly asked.
 
 Create or update `.env.example` with non-secret placeholders.
 
+`.env.example` is not currently present; it remains a documentation/setup task rather than an existing project file.
+
 Suggested keys:
 
 ```txt
@@ -470,7 +491,7 @@ Do not introduce a large test framework solely for MVP unless the project alread
 
 ### Step 2: Add documentation and content structure
 
-- Add `chat/knowledge/data/` files.
+- Maintain the `chat/data/` knowledge files and the loader in `chat/knowledge.ts`.
 - Add `.env.example`.
 - Add or update project docs if needed.
 

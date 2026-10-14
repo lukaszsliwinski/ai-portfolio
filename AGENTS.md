@@ -19,10 +19,10 @@ Do not implement future-scope features unless explicitly requested.
 - `app/` contains pages, layout, and the chat HTTP endpoint in `app/api/chat/route.ts`.
 - `components/chat/` contains the chat UI; `components/ui/` contains reusable UI components.
 - `chat/` contains chatbot logic, configuration, logging, and shared chat types.
-- `chat/model/` contains the Gemini integration and system prompt.
+- `chat/model/provider.ts` contains the Gemini integration; `chat/model/system-prompt.ts` defines the system prompt.
 - `chat/security/` contains request validation and rate limiting.
-- `chat/knowledge/` contains knowledge loading, formatting, and types.
-- `chat/knowledge/data/` contains the chatbot's Markdown knowledge files.
+- `chat/knowledge.ts` contains knowledge loading, formatting, and internal knowledge types, exposed through `getKnowledge()`.
+- `chat/data/` contains the chatbot's Markdown knowledge files.
 - `lib/` contains shared utilities and constants.
 
 Use the current paths above when locating or modifying files; the documented MVP scope and acceptance criteria apply.

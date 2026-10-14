@@ -43,7 +43,6 @@ export default function ChatWindow({
         <h3 className="font-semibold">Portfolio Assistant</h3>
       </div>
 
-      {/* TODO: dobrze przeanalizować zachowanie klasy [overflow-anchor:none] */}
       <div
         ref={scrollRef}
         aria-live="polite"
