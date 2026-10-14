@@ -11,5 +11,7 @@ export const chatConfig = {
   rateLimitRequests: Number(env("CHAT_RATE_LIMIT_REQUESTS")),
   rateLimitWindowHours: Number(env("CHAT_RATE_LIMIT_WINDOW_HOURS")),
   maxMessageLength: Number(env("CHAT_MAX_MESSAGE_LENGTH")),
+  maxAssistantMessageLength: Number(env("CHAT_MAX_ASSISTANT_MESSAGE_LENGTH")),
+  maxAssistantOutputTokens: Number(env("CHAT_MAX_ASSISTANT_OUTPUT_TOKENS")),
   maxMessages: Number(env("CHAT_MAX_MESSAGES")),
 } as const;

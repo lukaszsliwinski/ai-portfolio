@@ -184,6 +184,8 @@ The MVP should still include basic protections:
 - server-side API key usage only,
 - no API keys exposed to the browser.
 
+Assistant responses and assistant messages submitted as conversation history share a configurable character limit (`CHAT_MAX_ASSISTANT_MESSAGE_LENGTH`, with 5000 as the recommended setting). The server enforces this limit while streaming responses and validating requests; Gemini also has a separately configured output token limit (`CHAT_MAX_ASSISTANT_OUTPUT_TOKENS`, with 800 as the recommended setting). User message length is configured independently.
+
 The implementation should assume that users may try to force the assistant to ignore instructions, reveal internal behavior, or answer unrelated questions.
 
 ## Out-of-scope for MVP

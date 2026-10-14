@@ -13,7 +13,11 @@ function parseGoogleError(error: unknown): string {
 
   const msg = error.message.toLowerCase();
 
-  if (msg.includes("429") || msg.includes("resource_exhausted") || msg.includes("quota")) {
+  if (
+    msg.includes("429") ||
+    msg.includes("resource_exhausted") ||
+    msg.includes("quota")
+  ) {
     return "The AI provider is currently rate-limited by Google API quota. Please try again in a moment.";
   }
 
@@ -44,26 +48,53 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
   }));
 
   const encoder = new TextEncoder();
+  const abortController = new AbortController();
 
   return new ReadableStream<Uint8Array>({
     async start(controller) {
+      let responseLength = 0;
+
       try {
         const response = await ai.models.generateContentStream({
           model: chatConfig.model,
           contents,
           config: {
+            abortSignal: abortController.signal,
             systemInstruction: systemMessage?.content,
-            maxOutputTokens: 800,
+            maxOutputTokens: chatConfig.maxAssistantOutputTokens,
           },
         });
 
         for await (const chunk of response) {
           const text = chunk.text;
           if (text) {
-            controller.enqueue(encoder.encode(text));
+            const remainingLength =
+              chatConfig.maxAssistantMessageLength - responseLength;
+            let limitedText = text.slice(0, remainingLength);
+
+            // Avoid cutting an emoji or another surrogate pair at the limit.
+            if (
+              limitedText.length === remainingLength &&
+              /[\uD800-\uDBFF]$/.test(limitedText)
+            ) {
+              limitedText = limitedText.slice(0, -1);
+            }
+
+            if (limitedText) {
+              controller.enqueue(encoder.encode(limitedText));
+              responseLength += limitedText.length;
+            }
+
+            if (text.length >= remainingLength) {
+              abortController.abort();
+              break;
+            }
           }
         }
       } catch (error) {
+        // Reaching the response limit is a normal end of the stream.
+        if (abortController.signal.aborted) return;
+
         console.error("[provider] Gemini stream error:", error);
         logErrorEvent({
           ip: "server",

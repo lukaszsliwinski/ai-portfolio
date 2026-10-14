@@ -256,6 +256,7 @@ Validate at minimum:
 - content is a string,
 - content is not empty,
 - single user message length is within the configured limit,
+- each assistant message in the submitted history is within the configured assistant character limit,
 - conversation length is within the configured limit.
 
 Recommended MVP limits:
@@ -263,10 +264,13 @@ Recommended MVP limits:
 ```txt
 Maximum user message length: 800 characters
 Maximum messages sent to model: 10
-Maximum assistant response length: Gemini `maxOutputTokens`, kept short
+Maximum assistant message length (response and submitted history): 5000 characters
+Maximum Gemini output: 800 tokens
 ```
 
-Exact values may be adjusted during implementation.
+User message length and conversation length are configured through `CHAT_MAX_MESSAGE_LENGTH` and `CHAT_MAX_MESSAGES`. The assistant limits are read from `CHAT_MAX_ASSISTANT_MESSAGE_LENGTH` and `CHAT_MAX_ASSISTANT_OUTPUT_TOKENS` in `chat/config.ts`, using the same required-environment-variable mechanism as the other settings. `maxAssistantMessageLength` is used by both request validation and the Gemini provider; `maxAssistantOutputTokens` is passed to the SDK's `maxOutputTokens` option. The values above are example settings, not hard-coded limits.
+
+The provider caps streamed assistant text at the configured character limit before sending it to the client, so generated replies also satisfy history validation on subsequent requests. Both checks use JavaScript string length (UTF-16 code units); truncation avoids splitting surrogate pairs. Reaching the limit closes the response normally and may leave a sentence or Markdown formatting incomplete. It also aborts the local SDK request; SDK cancellation does not guarantee that generation stops on Google's servers. The token generation limit remains separate from the character limit.
 
 ## Rate limiting
 
@@ -457,6 +461,8 @@ GEMINI_API_KEY=
 CHAT_RATE_LIMIT_REQUESTS=10
 CHAT_RATE_LIMIT_WINDOW_HOURS=1
 CHAT_MAX_MESSAGE_LENGTH=800
+CHAT_MAX_ASSISTANT_MESSAGE_LENGTH=5000
+CHAT_MAX_ASSISTANT_OUTPUT_TOKENS=800
 CHAT_MAX_MESSAGES=10
 ```
 

@@ -30,20 +30,35 @@ export function validateChatRequest(body: unknown): ValidationResult {
   }
 
   if (messages.length > chatConfig.maxMessages) {
-    return fail(`Conversation history is too long. Maximum allowed messages is ${chatConfig.maxMessages}.`);
+    return fail(
+      `Conversation history is too long. Maximum allowed messages is ${chatConfig.maxMessages}.`,
+    );
   }
 
   if (!messages.every(isChatMessage)) {
-    return fail(`Each message needs a role (${CHAT_ROLES.join(", ")}) and non-empty text content.`);
+    return fail(
+      `Each message needs a role (${CHAT_ROLES.join(", ")}) and non-empty text content.`,
+    );
   }
 
-  if (messages.some((m) => m.role === "user" && m.content.length > chatConfig.maxMessageLength)) {
-    return fail(`Message is too long. Maximum allowed length is ${chatConfig.maxMessageLength} characters.`);
+  for (const message of messages) {
+    const maxLength =
+      message.role === "assistant"
+        ? chatConfig.maxAssistantMessageLength
+        : chatConfig.maxMessageLength;
+
+    if (message.content.length > maxLength) {
+      return fail(
+        `Message is too long. Maximum allowed length is ${maxLength} characters.`,
+      );
+    }
   }
-  
+
   // Rebuild objects so any extra client-sent fields are dropped.
   return {
     isValid: true,
-    data: { messages: messages.map(({ role, content }) => ({ role, content })) },
+    data: {
+      messages: messages.map(({ role, content }) => ({ role, content })),
+    },
   };
 }
