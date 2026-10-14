@@ -119,6 +119,6 @@ export async function POST(request: NextRequest) {
     if (userMessage) {
       logChatMessage({ userMessage, assistantMessage: "", error: message });
     }
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Something went wrong. Please try again later." }, { status: 500 });
   }
 }
