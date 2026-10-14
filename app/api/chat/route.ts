@@ -28,6 +28,8 @@ function formatWaitTime(totalSeconds: number): string {
  * constructs system prompt, and streams Gemini response.
  */
 export async function POST(request: NextRequest) {
+  let userMessage: string | undefined;
+
   try {
     const headersList = await headers();
     const clientIp =
@@ -43,7 +45,6 @@ export async function POST(request: NextRequest) {
         const originHost = new URL(origin).host;
         if (originHost !== host) {
           logErrorEvent({
-            ip: clientIp,
             type: "forbidden",
             error: "Cross-origin request blocked",
           });
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
     if (!rateLimit.success) {
       const waitTimeText = formatWaitTime(rateLimit.resetSeconds);
       const errMsg = `Message limit reached for your IP address. Please wait ${waitTimeText} before sending another message.`;
-      logErrorEvent({ ip: clientIp, type: "rate_limited", error: errMsg });
+      logErrorEvent({ type: "rate_limited", error: errMsg });
       return NextResponse.json(
         { error: errMsg },
         {
@@ -79,7 +80,6 @@ export async function POST(request: NextRequest) {
       body = await request.json();
     } catch {
       logErrorEvent({
-        ip: clientIp,
         type: "bad_request",
         error: "Invalid JSON in request body",
       });
@@ -93,7 +93,6 @@ export async function POST(request: NextRequest) {
     const validation = validateChatRequest(body);
     if (!validation.isValid) {
       logErrorEvent({
-        ip: clientIp,
         type: "bad_request",
         error: validation.error || "Validation failed",
       });
@@ -102,25 +101,24 @@ export async function POST(request: NextRequest) {
 
     const { messages } = validation.data;
 
-    // Log latest user message asynchronously in background
-    const lastUserMsg = [...messages]
+    // Keep the question available if setup fails before the provider starts.
+    userMessage = [...messages]
       .reverse()
       .find((m) => m.role === "user")?.content;
-    if (lastUserMsg) {
-      logChatMessage({ ip: clientIp, userMessage: lastUserMsg });
-    }
 
     // Build the knowledge-grounded prompt and stream the Gemini response
     const stream = await createChatStream(messages);
 
     return new Response(stream, {
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
+      headers: { "Content-Type": "application/x-ndjson; charset=utf-8" },
     });
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "An unexpected error occurred.";
-    console.error("[/api/chat] Unhandled error:", error);
-    logErrorEvent({ ip: "server", type: "api_error", error: message });
+    logErrorEvent({ type: "api_error", error: message, userMessage });
+    if (userMessage) {
+      logChatMessage({ userMessage, assistantMessage: "", error: message });
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

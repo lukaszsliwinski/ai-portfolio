@@ -13,3 +13,7 @@ export interface LLMMessage {
   role: ChatRole | "system";
   content: string;
 }
+
+// Events sent as JSON Lines by the provider and read by the chat client.
+export type ChatStreamEvent =
+  { type: "text"; content: string } | { type: "error"; message: string };

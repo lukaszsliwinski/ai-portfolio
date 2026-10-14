@@ -1,6 +1,7 @@
 // Wczytuje po stronie serwera pliki Markdown tworzące bazę wiedzy o autorze portfolio.
 import fs from "fs/promises";
 import path from "path";
+import { logErrorEvent } from "./logger";
 
 interface KnowledgeData {
   profile: string;
@@ -85,7 +86,10 @@ async function loadKnowledge(): Promise<KnowledgeData> {
       recruiterFaq,
     };
   } catch (error) {
-    console.error("Error loading knowledge content files:", error);
+    logErrorEvent({
+      type: "knowledge_error",
+      error: `Error loading knowledge content files: ${error instanceof Error ? error.message : String(error)}`,
+    });
     throw new Error(
       "Failed to load developer knowledge files. Make sure all required files exist in the content directory.",
     );

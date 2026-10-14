@@ -3,13 +3,18 @@ import fs from "fs/promises";
 import path from "path";
 
 interface ChatLogPayload {
-  ip: string;
   userMessage: string;
+  assistantMessage: string;
+  error?: string;
 }
 
 interface ErrorLogPayload {
-  ip: string;
-  type: "rate_limited" | "bad_request" | "forbidden" | "api_error";
+  type:
+    | "rate_limited"
+    | "bad_request"
+    | "forbidden"
+    | "api_error"
+    | "knowledge_error";
   error: string;
   userMessage?: string;
 }
@@ -34,21 +39,37 @@ function appendJsonl(fileName: string, data: object): void {
 
   fs.mkdir(logsDir, { recursive: true })
     .then(() => fs.appendFile(filePath, entry, "utf-8"))
-    .catch((err) =>
-      console.error(`[logger] Failed to write to ${fileName}:`, err),
-    );
+    .catch((error: unknown) => {
+      const failureEntry =
+        JSON.stringify({
+          timestamp: getWarsawTimestamp(),
+          type: "logger_error",
+          error: `Failed to write to ${fileName}: ${error instanceof Error ? error.message : String(error)}`,
+        }) + "\n";
+
+      // Try a separate file once; calling this logger again could recurse forever.
+      return fs
+        .appendFile(
+          path.join(logsDir, "logger-error.jsonl"),
+          failureEntry,
+          "utf-8",
+        )
+        .catch(() => undefined);
+    });
 }
 
 /**
- * Asynchronously logs valid user chat messages to logs/chat-audit.jsonl
+ * Asynchronously logs a user question and its generated reply to logs/chat-audit.jsonl.
  */
 export function logChatMessage(payload: ChatLogPayload): void {
-  appendJsonl("chat-audit.jsonl", payload);
+  const { userMessage, assistantMessage, error } = payload;
+  appendJsonl("chat-audit.jsonl", { userMessage, assistantMessage, error });
 }
 
 /**
  * Asynchronously logs error events (rate limits, validation failures, API errors) to logs/error-audit.jsonl
  */
 export function logErrorEvent(payload: ErrorLogPayload): void {
-  appendJsonl("error-audit.jsonl", payload);
+  const { type, error, userMessage } = payload;
+  appendJsonl("error-audit.jsonl", { type, error, userMessage });
 }

@@ -153,6 +153,8 @@ The assistant should use Gemini streaming to return responses token by token.
 
 This improves perceived performance and makes the chatbot feel more responsive.
 
+The API sends JSON Lines events that distinguish assistant text from provider errors. The client buffers incomplete events before parsing them, preserving streaming across network chunk boundaries.
+
 ## Markdown responses
 
 Assistant responses may use markdown for:

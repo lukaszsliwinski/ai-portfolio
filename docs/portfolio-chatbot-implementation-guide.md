@@ -94,6 +94,7 @@ chat/
   config.ts
   logger.ts
   types.ts
+  stream.ts
   knowledge.ts
   model/
     provider.ts
@@ -132,9 +133,15 @@ tsconfig.json
 
 The project uses root-level directories without a `src/` directory. Follow this existing convention.
 
-`chat/types.ts` defines shared request and model message types. `components/chat/types.ts` defines UI message types and reuses the shared chat role. Knowledge types are internal to `chat/knowledge.ts`.
+`chat/types.ts` defines shared request, model message, and stream event types. `chat/stream.ts` decodes the JSON Lines response stream on the client. `components/chat/types.ts` defines UI message types and reuses the shared chat role. Knowledge types are internal to `chat/knowledge.ts`.
 
 `public/` contains static assets. `chat/logger.ts` creates runtime JSONL files in `logs/`, which is ignored by Git; `docker-compose.yml` mounts the host's `./logs` directory at `/app/logs` in the container.
+
+Each new entry in `logs/chat-audit.jsonl` pairs the latest `userMessage` with its generated `assistantMessage` and a completion timestamp. The provider collects only the text fragments emitted to the client, respecting the configured response length limit, and logs the exchange once the stream finishes. Failed or empty responses include an `error` field; a failed stream may contain partial assistant text. Setup failures before generation log the question with an empty answer and the error. Writes remain asynchronous and do not delay streaming.
+
+Error entries contain a timestamp, error type, error message, and an optional user message. Neither logger records an IP field. Client IP addresses are used separately by the in-memory rate limiter. Existing log entries are not rewritten by this change.
+
+Knowledge loading failures are logged with their original filesystem error as `knowledge_error` in `logs/error-audit.jsonl`; the API also records the resulting request failure. If writing an audit log fails, the logger makes one direct attempt to record a `logger_error` in `logs/logger-error.jsonl`, without recursively invoking itself or writing to the console. If the entire logs directory is unwritable or the disk is full, this fallback can also fail; that final failure is contained so logging does not disrupt chat requests.
 
 ## Knowledge files
 
@@ -242,6 +249,21 @@ The endpoint should:
 7. call the chat service backed by Gemini,
 8. stream or return the response,
 9. return clear error responses for invalid requests.
+
+## Response stream protocol
+
+Successful chat requests return `application/x-ndjson; charset=utf-8`. Each event is serialized with `JSON.stringify()` and followed by a newline:
+
+```jsonl
+{"type":"text","content":"A fragment of the assistant response."}
+{"type":"error","message":"A user-friendly provider error."}
+```
+
+The provider emits `text` events as Gemini generates content and an `error` event if generation fails. Model text is always contained in the `content` field and cannot be mistaken for an error event. The character limit applies to assistant text, excluding JSON framing.
+
+`readChatStream()` in `chat/stream.ts` uses a streaming UTF-8 decoder and buffers incomplete lines, so network chunks may split an event or contain several events. It validates each event's type and payload, flushes the decoder at EOF, and also accepts a complete final JSON event without a trailing newline. Malformed or incomplete JSON is treated as a stream failure. The reader is cancelled and released when parsing stops.
+
+`components/chat/ChatSection.tsx` appends text events to the current assistant message. Error events, malformed streams, network failures, and empty responses show a user-friendly error and remove the incomplete assistant message from history. Non-2xx responses continue to use the existing JSON `{ "error": "..." }` format.
 
 ## Input validation
 

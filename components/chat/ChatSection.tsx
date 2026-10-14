@@ -6,11 +6,12 @@ import { useState, useRef } from "react";
 import ChatWindow from "./ChatWindow";
 import SuggestedQuestions from "./SuggestedQuestions";
 import type { ChatUiMessage } from "./types";
+import { readChatStream } from "@/chat/stream";
 
 import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/ui/Reveal";
 
-import { CHAT_TEXT, DEFAULT_WELCOME_MESSAGE, STREAM_ERROR_PREFIX } from "@/lib/constants";
+import { CHAT_TEXT, DEFAULT_WELCOME_MESSAGE } from "@/lib/constants";
 
 interface ChatSectionProps {
   maxMessageLength: number;
@@ -60,6 +61,8 @@ export default function ChatSection({
       .slice(-maxMessages)
       .map(({ role, content }) => ({ role, content }));
 
+    let assistantMessageId: string | null = null;
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -83,41 +86,42 @@ export default function ChatSection({
 
       // Add an empty assistant message and stream content into it
       const assistantMessage = createMessage("assistant", "");
+      assistantMessageId = assistantMessage.id;
       setIsThinking(false);
       setMessages((prev) => [...prev, assistantMessage]);
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-
-        if (chunk.includes(STREAM_ERROR_PREFIX)) {
-          const apiError =
-            chunk.split(STREAM_ERROR_PREFIX)[1] ||
-            "The AI assistant encountered an error.";
-          setError(apiError);
+      let receivedText = false;
+      for await (const event of readChatStream(response.body)) {
+        if (event.type === "error") {
+          setError(event.message || "The AI assistant encountered an error.");
           setMessages((prev) =>
             prev.filter((m) => m.id !== assistantMessage.id),
           );
-          break;
+          return;
         }
 
+        if (!event.content) continue;
+        receivedText = true;
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantMessage.id
-              ? { ...m, content: m.content + chunk }
+              ? { ...m, content: m.content + event.content }
               : m,
           ),
         );
+      }
+
+      if (!receivedText) {
+        setError("Received an empty response from the server.");
+        setMessages((prev) => prev.filter((m) => m.id !== assistantMessage.id));
       }
     } catch {
       setError(
         "Could not reach the assistant. Please check your connection and try again.",
       );
+      if (assistantMessageId !== null) {
+        setMessages((prev) => prev.filter((m) => m.id !== assistantMessageId));
+      }
     } finally {
       setIsThinking(false);
       isSendingRef.current = false;

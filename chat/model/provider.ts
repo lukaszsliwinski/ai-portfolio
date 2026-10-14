@@ -1,9 +1,8 @@
 // Integruje aplikację z Gemini: mapuje historię rozmowy, strumieniuje odpowiedź i zamienia błędy API na komunikaty dla użytkownika.
 import { GoogleGenAI } from "@google/genai";
 import { chatConfig } from "@/chat/config";
-import { logErrorEvent } from "@/chat/logger";
-import { STREAM_ERROR_PREFIX } from "@/lib/constants";
-import type { LLMMessage } from "@/chat/types";
+import { logChatMessage, logErrorEvent } from "@/chat/logger";
+import type { ChatStreamEvent, LLMMessage } from "@/chat/types";
 
 /** Extracts a friendly user-facing error message from Google API errors. */
 function parseGoogleError(error: unknown): string {
@@ -34,13 +33,16 @@ function parseGoogleError(error: unknown): string {
 
 /**
  * Streams a chat response from Gemini.
- * Emits STREAM_ERROR_PREFIX sentinel line on error instead of throwing uncaught stream error.
+ * Emits JSON Lines events for text and user-facing errors.
  */
 export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
   const ai = new GoogleGenAI({ apiKey: chatConfig.geminiApiKey });
 
   const systemMessage = messages.find((m) => m.role === "system");
   const conversation = messages.filter((m) => m.role !== "system");
+  const userMessage = [...conversation]
+    .reverse()
+    .find((message) => message.role === "user")?.content;
 
   const contents = conversation.map((m) => ({
     role: m.role === "assistant" ? "model" : "user",
@@ -53,6 +55,11 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
   return new ReadableStream<Uint8Array>({
     async start(controller) {
       let responseLength = 0;
+      let assistantMessage = "";
+      let responseError: string | undefined;
+      const sendEvent = (event: ChatStreamEvent) => {
+        controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
+      };
 
       try {
         const response = await ai.models.generateContentStream({
@@ -81,7 +88,8 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
             }
 
             if (limitedText) {
-              controller.enqueue(encoder.encode(limitedText));
+              sendEvent({ type: "text", content: limitedText });
+              assistantMessage += limitedText;
               responseLength += limitedText.length;
             }
 
@@ -95,17 +103,26 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
         // Reaching the response limit is a normal end of the stream.
         if (abortController.signal.aborted) return;
 
-        console.error("[provider] Gemini stream error:", error);
         logErrorEvent({
-          ip: "server",
           type: "api_error",
           error: `Gemini stream error: ${error instanceof Error ? error.message : "An unexpected error occurred."}`,
+          userMessage,
         });
         const userError = parseGoogleError(error);
-        controller.enqueue(
-          encoder.encode(`${STREAM_ERROR_PREFIX}${userError}`),
-        );
+        responseError = userError;
+        sendEvent({ type: "error", message: userError });
       } finally {
+        if (userMessage) {
+          logChatMessage({
+            userMessage,
+            assistantMessage,
+            error:
+              responseError ||
+              (assistantMessage
+                ? undefined
+                : "Received an empty response from the server."),
+          });
+        }
         controller.close();
       }
     },

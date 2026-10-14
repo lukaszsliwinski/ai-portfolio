@@ -19,6 +19,7 @@ Do not implement future-scope features unless explicitly requested.
 - `app/` contains pages, layout, and the chat HTTP endpoint in `app/api/chat/route.ts`.
 - `components/chat/` contains the chat UI; `components/ui/` contains reusable UI components.
 - `chat/` contains chatbot logic, configuration, logging, and shared chat types.
+- `chat/stream.ts` decodes the JSON Lines response stream for the client; `chat/types.ts` defines the shared stream event types.
 - `chat/model/provider.ts` contains the Gemini integration; `chat/model/system-prompt.ts` defines the system prompt.
 - `chat/security/` contains request validation and rate limiting.
 - `chat/knowledge.ts` contains knowledge loading, formatting, and internal knowledge types, exposed through `getKnowledge()`.
