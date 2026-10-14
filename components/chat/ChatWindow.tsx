@@ -10,6 +10,7 @@ import AssistantAvatar from "./AssistantAvatar";
 interface ChatWindowProps {
   messages: ChatUiMessage[];
   isThinking: boolean;
+  isSending: boolean;
   /** Non-null when the last API call returned an error. */
   error: string | null;
   onSendMessage: (content: string) => void;
@@ -20,6 +21,7 @@ interface ChatWindowProps {
 export default function ChatWindow({
   messages,
   isThinking,
+  isSending,
   error,
   onSendMessage,
   onClearChat,
@@ -82,7 +84,7 @@ export default function ChatWindow({
         <ChatInput
           onSendMessage={onSendMessage}
           onClearChat={onClearChat}
-          isDisabled={isThinking}
+          isDisabled={isSending}
           maxMessageLength={maxMessageLength}
         />
       </div>

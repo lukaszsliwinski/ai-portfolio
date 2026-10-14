@@ -265,6 +265,8 @@ The provider emits `text` events as Gemini generates content and an `error` even
 
 `components/chat/ChatSection.tsx` appends text events to the current assistant message. Error events, malformed streams, network failures, and empty responses show a user-friendly error and remove the incomplete assistant message from history. Non-2xx responses continue to use the existing JSON `{ "error": "..." }` format.
 
+The request remains busy until the response stream finishes or fails. Message input, sending, suggested questions, and clearing the conversation are disabled throughout the request. The thinking indicator is tracked separately and disappears when the response stream is opened. Clearing the chat is available again after completion; it does not cancel an active request.
+
 ## Input validation
 
 Request validation lives in `chat/security/validate-request.ts`; shared request types live in `chat/types.ts`.

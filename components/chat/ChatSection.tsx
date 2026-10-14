@@ -40,14 +40,16 @@ export default function ChatSection({
     createWelcomeMessages,
   );
   const [isThinking, setIsThinking] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isSendingRef = useRef(false);
 
   const handleSendMessage = async (content: string) => {
     const message = content.trim();
-    if (!message || isThinking || isSendingRef.current) return;
+    if (!message || isSendingRef.current) return;
     isSendingRef.current = true;
+    setIsSending(true);
 
     // Optimistically add the user message and clear previous error
     const userMessage = createMessage("user", message);
@@ -124,14 +126,14 @@ export default function ChatSection({
       }
     } finally {
       setIsThinking(false);
+      setIsSending(false);
       isSendingRef.current = false;
     }
   };
 
   const handleClearChat = () => {
+    if (isSendingRef.current) return;
     setMessages(createWelcomeMessages());
-    setIsThinking(false);
-    isSendingRef.current = false;
     setError(null);
   };
 
@@ -145,6 +147,7 @@ export default function ChatSection({
           <ChatWindow
             messages={messages}
             isThinking={isThinking}
+            isSending={isSending}
             error={error}
             onSendMessage={handleSendMessage}
             onClearChat={handleClearChat}
@@ -154,7 +157,10 @@ export default function ChatSection({
         <Reveal className="flex max-w-xl flex-1 flex-col gap-6">
           <SectionHeader main="Portfolio Assistant" />
           <p>{CHAT_TEXT}</p>
-          <SuggestedQuestions onSelectQuestion={handleSendMessage} />
+          <SuggestedQuestions
+            onSelectQuestion={handleSendMessage}
+            isDisabled={isSending}
+          />
         </Reveal>
       </div>
     </section>
