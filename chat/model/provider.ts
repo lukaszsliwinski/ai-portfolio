@@ -1,6 +1,6 @@
 // Integruje aplikację z Gemini: mapuje historię rozmowy, strumieniuje odpowiedź i zamienia błędy API na komunikaty dla użytkownika.
 import { GoogleGenAI } from "@google/genai";
-import { chatConfig } from "@/chat/config";
+import { getModelConfig, limits } from "@/chat/config";
 import { logChatMessage, logErrorEvent } from "@/chat/logger";
 import type { ChatStreamEvent, LLMMessage } from "@/chat/types";
 
@@ -36,7 +36,8 @@ function parseGoogleError(error: unknown): string {
  * Emits JSON Lines events for text and user-facing errors.
  */
 export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
-  const ai = new GoogleGenAI({ apiKey: chatConfig.geminiApiKey });
+  const modelConfig = getModelConfig();
+  const ai = new GoogleGenAI({ apiKey: modelConfig.apiKey });
 
   const systemMessage = messages.find((m) => m.role === "system");
   const conversation = messages.filter((m) => m.role !== "system");
@@ -63,12 +64,12 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
 
       try {
         const response = await ai.models.generateContentStream({
-          model: chatConfig.model,
+          model: modelConfig.model,
           contents,
           config: {
             abortSignal: abortController.signal,
             systemInstruction: systemMessage?.content,
-            maxOutputTokens: chatConfig.maxAssistantOutputTokens,
+            maxOutputTokens: limits.maxAssistantOutputTokens,
           },
         });
 
@@ -76,7 +77,7 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
           const text = chunk.text;
           if (text) {
             const remainingLength =
-              chatConfig.maxAssistantMessageLength - responseLength;
+              limits.maxAssistantMessageLength - responseLength;
             let limitedText = text.slice(0, remainingLength);
 
             // Avoid cutting an emoji or another surrogate pair at the limit.

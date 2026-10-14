@@ -4,7 +4,7 @@ import Landing from "@/components/landing/Landing";
 import ChatSection from "@/components/chat/ChatSection";
 import Projects from "@/components/projects/Projects";
 import Footer from "@/components/footer/Footer";
-import { chatConfig } from "@/chat/config";
+import { limits } from "@/chat/config";
 
 export default function Home() {
   return (
@@ -14,8 +14,8 @@ export default function Home() {
         <Background />
         <Landing />
         <ChatSection
-          maxMessageLength={chatConfig.maxMessageLength}
-          maxMessages={chatConfig.maxMessages}
+          maxMessageLength={limits.maxMessageLength}
+          maxMessages={limits.maxMessages}
         />
         <Projects />
       </main>

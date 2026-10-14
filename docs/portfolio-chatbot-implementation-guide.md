@@ -219,7 +219,7 @@ The chat flow should call Gemini through `chat/service.ts`. Client Components mu
 
 Use Gemini's streaming API for assistant responses.
 
-Environment variables should be used for secrets and model configuration.
+`chat/config.ts` exports the static `limits` object and the `getModelConfig()` function. The latter reads the API key and model name from environment variables only when called by `streamChat()`. Importing this module does not read or require environment variables, so the application can build without Gemini configuration.
 
 Suggested environment names:
 
@@ -292,7 +292,7 @@ Maximum assistant message length (response and submitted history): 5000 characte
 Maximum Gemini output: 800 tokens
 ```
 
-User message length and conversation length are configured through `CHAT_MAX_MESSAGE_LENGTH` and `CHAT_MAX_MESSAGES`. The assistant limits are read from `CHAT_MAX_ASSISTANT_MESSAGE_LENGTH` and `CHAT_MAX_ASSISTANT_OUTPUT_TOKENS` in `chat/config.ts`, using the same required-environment-variable mechanism as the other settings. `maxAssistantMessageLength` is used by both request validation and the Gemini provider; `maxAssistantOutputTokens` is passed to the SDK's `maxOutputTokens` option. The values above are example settings, not hard-coded limits.
+All six chat limits are declared in the `limits` object in `chat/config.ts`. `app/page.tsx` passes `limits.maxMessageLength` and `limits.maxMessages` to the UI; request validation uses the same values. `limits.maxAssistantMessageLength` is used by both request validation and the Gemini provider; `limits.maxAssistantOutputTokens` is passed to the SDK's `maxOutputTokens` option. Changing any limit requires rebuilding and redeploying the application; no `CHAT_*` environment variables are used.
 
 The provider caps streamed assistant text at the configured character limit before sending it to the client, so generated replies also satisfy history validation on subsequent requests. Both checks use JavaScript string length (UTF-16 code units); truncation avoids splitting surrogate pairs. Reaching the limit closes the response normally and may leave a sentence or Markdown formatting incomplete. It also aborts the local SDK request; SDK cancellation does not guarantee that generation stops on Google's servers. The token generation limit remains separate from the character limit.
 
@@ -319,7 +319,7 @@ Suggested initial policy:
 10 requests per hour per IP
 ```
 
-The policy is configured by `CHAT_RATE_LIMIT_REQUESTS` and `CHAT_RATE_LIMIT_WINDOW_HOURS` in `chat/config.ts`; the values above are an example, not hard-coded limits.
+The policy is configured by `limits.rateLimitRequests` and `limits.rateLimitWindowHours` in `chat/config.ts`, currently 10 requests per hour per IP.
 
 ## Assistant behavior policy
 
@@ -461,6 +461,8 @@ The project will be hosted on a VPS using Docker Compose behind Traefik with Let
 
 The implementation should be compatible with Dockerized deployment.
 
+`.dockerignore` excludes environment files, local dependencies, build output, logs, scratch files, and documentation from the build context. The build does not require model configuration. Docker Compose supplies the runtime environment through `env_file: .env`; no build arguments or build secrets are needed for chat settings. The Markdown knowledge files in `chat/data/` remain part of the image.
+
 Recommended Next.js production direction:
 
 - use a production build,
@@ -482,12 +484,6 @@ Suggested keys:
 ```txt
 LLM_MODEL=
 GEMINI_API_KEY=
-CHAT_RATE_LIMIT_REQUESTS=10
-CHAT_RATE_LIMIT_WINDOW_HOURS=1
-CHAT_MAX_MESSAGE_LENGTH=800
-CHAT_MAX_ASSISTANT_MESSAGE_LENGTH=5000
-CHAT_MAX_ASSISTANT_OUTPUT_TOKENS=800
-CHAT_MAX_MESSAGES=10
 ```
 
 Do not create a real `.env` file with secrets.
@@ -503,7 +499,7 @@ At minimum, verify:
 - clear chat works,
 - endpoint rejects invalid input,
 - endpoint enforces message length,
-- application fails fast with a clear error when required configuration is missing,
+- application builds without model environment variables, and starting a chat response fails with a logged error and a generic client response when model configuration is missing,
 - assistant does not answer unrelated general questions as if it were a general chatbot.
 
 If the project has a test framework, add focused tests for validation and content loading.
@@ -537,7 +533,7 @@ Do not introduce a large test framework solely for MVP unless the project alread
 
 - Add `/api/chat` endpoint.
 - Add validation.
-- Validate required Gemini configuration and fail fast if it is missing.
+- Validate required Gemini configuration when starting a chat response; importing modules and building the application must not require it.
 
 ### Step 5: Add content loader and assistant context
 

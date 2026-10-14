@@ -1,5 +1,5 @@
 // Waliduje strukturę, role, zawartość i limity historii wiadomości przesyłanej do endpointu chatu.
-import { chatConfig } from "@/chat/config";
+import { limits } from "@/chat/config";
 import { CHAT_ROLES } from "@/chat/types";
 import type { ChatRequestMessage } from "@/chat/types";
 
@@ -29,9 +29,9 @@ export function validateChatRequest(body: unknown): ValidationResult {
     return fail("'messages' must be a non-empty array.");
   }
 
-  if (messages.length > chatConfig.maxMessages) {
+  if (messages.length > limits.maxMessages) {
     return fail(
-      `Conversation history is too long. Maximum allowed messages is ${chatConfig.maxMessages}.`,
+      `Conversation history is too long. Maximum allowed messages is ${limits.maxMessages}.`,
     );
   }
 
@@ -44,8 +44,8 @@ export function validateChatRequest(body: unknown): ValidationResult {
   for (const message of messages) {
     const maxLength =
       message.role === "assistant"
-        ? chatConfig.maxAssistantMessageLength
-        : chatConfig.maxMessageLength;
+        ? limits.maxAssistantMessageLength
+        : limits.maxMessageLength;
 
     if (message.content.length > maxLength) {
       return fail(

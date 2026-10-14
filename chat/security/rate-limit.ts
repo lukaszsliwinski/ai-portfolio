@@ -1,5 +1,5 @@
 // Ogranicza liczbę żądań chatu dla adresu IP przy użyciu prostego magazynu danych w pamięci procesu.
-import { chatConfig } from "@/chat/config";
+import { limits } from "@/chat/config";
 
 interface RateLimitEntry {
   count: number;
@@ -16,7 +16,7 @@ export function checkRateLimit(ip: string): {
   success: boolean;
   resetSeconds: number;
 } {
-  const windowMs = chatConfig.rateLimitWindowHours * 60 * 60 * 1000;
+  const windowMs = limits.rateLimitWindowHours * 60 * 60 * 1000;
 
   const now = Date.now();
   const entry = store.get(ip);
@@ -33,7 +33,7 @@ export function checkRateLimit(ip: string): {
     return { success: true, resetSeconds: Math.ceil(windowMs / 1000) };
   }
 
-  if (entry.count >= chatConfig.rateLimitRequests) {
+  if (entry.count >= limits.rateLimitRequests) {
     const resetSeconds = Math.max(1, Math.ceil((entry.resetTime - now) / 1000));
     return { success: false, resetSeconds };
   }

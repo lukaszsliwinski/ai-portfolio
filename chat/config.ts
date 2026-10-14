@@ -1,17 +1,22 @@
-// Pobiera i exportuje zmienne środowiskowe
+// Przechowuje limity chatu i odczytuje konfigurację modelu dopiero przy wywołaniu.
 function env(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`Missing env variable: ${name}`);
   return value;
 }
 
-export const chatConfig = {
-  geminiApiKey: env("GEMINI_API_KEY"),
-  model: env("LLM_MODEL"),
-  rateLimitRequests: Number(env("CHAT_RATE_LIMIT_REQUESTS")),
-  rateLimitWindowHours: Number(env("CHAT_RATE_LIMIT_WINDOW_HOURS")),
-  maxMessageLength: Number(env("CHAT_MAX_MESSAGE_LENGTH")),
-  maxAssistantMessageLength: Number(env("CHAT_MAX_ASSISTANT_MESSAGE_LENGTH")),
-  maxAssistantOutputTokens: Number(env("CHAT_MAX_ASSISTANT_OUTPUT_TOKENS")),
-  maxMessages: Number(env("CHAT_MAX_MESSAGES")),
+export const limits = {
+  rateLimitRequests: 10,
+  rateLimitWindowHours: 1,
+  maxMessageLength: 800,
+  maxAssistantMessageLength: 5000,
+  maxAssistantOutputTokens: 800,
+  maxMessages: 10,
 } as const;
+
+export function getModelConfig() {
+  return {
+    apiKey: env("GEMINI_API_KEY"),
+    model: env("LLM_MODEL"),
+  };
+}
