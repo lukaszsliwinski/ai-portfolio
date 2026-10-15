@@ -56,7 +56,7 @@ export default function ChatWindow({
 
         {/* Loading indicator */}
         {isThinking && (
-          <div className="animate-in fade-in flex w-full items-end gap-3 px-1 duration-200">
+          <div className="flex w-full items-end gap-3 px-1">
             <AssistantAvatar />
 
             <div className="flex h-10 min-w-15 items-center justify-center gap-1.5 rounded-lg rounded-tl-none border border-app-mid-dark bg-app-mid-dark/40 p-3.5">
@@ -69,10 +69,7 @@ export default function ChatWindow({
 
         {/* Error state */}
         {!isThinking && error && (
-          <div
-            role="alert"
-            className="animate-in fade-in flex w-full items-start gap-3 px-1 duration-200"
-          >
+          <div role="alert" className="flex w-full items-start gap-3 px-1">
             <div className="flex-1 rounded-md border border-red-800/50 bg-red-950/60 px-4 py-3 text-red-300">
               {error}
             </div>

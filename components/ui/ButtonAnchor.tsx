@@ -1,5 +1,4 @@
 // Renderuje stylizowany odnośnik działający jako przycisk, z opcjonalną ikoną i obsługą linków zewnętrznych.
-import Link from "next/link";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import FaWrapper from "./FaWrapper";
 
@@ -16,7 +15,7 @@ export default function ButtonAnchor({ label, href, icon }: ButtonAnchorProps) {
   const rel = isInternal ? undefined : "noopener noreferrer";
 
   return (
-    <Link
+    <a
       href={href}
       target={target}
       rel={rel}
@@ -24,6 +23,6 @@ export default function ButtonAnchor({ label, href, icon }: ButtonAnchorProps) {
     >
       {icon && <FaWrapper icon={icon} size={16} className="mr-1.5 mb-px" />}
       <span>{label}</span>
-    </Link>
+    </a>
   );
 }

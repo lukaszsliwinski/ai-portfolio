@@ -1,4 +1,5 @@
 // Integruje aplikację z Gemini: mapuje historię rozmowy, strumieniuje odpowiedź i zamienia błędy API na komunikaty dla użytkownika.
+import "server-only";
 import { GoogleGenAI } from "@google/genai";
 import { getModelConfig, limits } from "@/chat/config";
 import { logChatMessage, logErrorEvent } from "@/chat/logger";

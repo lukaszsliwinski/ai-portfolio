@@ -2,7 +2,6 @@
 
 // Renderuje przyklejony pasek nawigacji z identyfikacją portfolio i linkami do profili zewnętrznych.
 import { faHexagonNodes } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
 import { motion } from "motion/react";
 import FaWrapper from "@/components/ui/FaWrapper";
 import Reveal from "@/components/ui/Reveal";
@@ -34,7 +33,7 @@ export default function NavBar() {
                 variants={childVariants}
                 className="flex items-center justify-center transition-colors hover:text-app-foreground"
             >
-              <Link
+              <a
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -42,7 +41,7 @@ export default function NavBar() {
                 className="p-2.5 pb-1"
               >
                 <FaWrapper icon={link.icon} size={22} />
-              </Link>
+              </a>
             </motion.div>
           ))}
         </StaggerReveal>

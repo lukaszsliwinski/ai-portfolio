@@ -12,7 +12,7 @@ interface ChatMessageProps {
  * Safely parses **bold** into React elements without using dangerouslySetInnerHTML.
  */
 function parseBoldFormatting(text: string): React.ReactNode[] {
-  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g);
+  const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, index) => {
     if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
       return (
@@ -26,7 +26,7 @@ function parseBoldFormatting(text: string): React.ReactNode[] {
 }
 
 /**
- * Safely renders markdown content (bullet lists, paragraphs, inline formatting).
+ * Safely renders paragraphs, bold text and simple bullet lists.
  */
 function FormattedContent({ content }: { content: string }) {
   const lines = content.split("\n");
@@ -64,7 +64,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        "animate-in fade-in slide-in-from-bottom-2 flex w-full items-end gap-3 px-1 duration-200",
+        "flex w-full items-end gap-3 px-1",
         isUser ? "justify-end" : "justify-start",
       )}
     >

@@ -1,4 +1,5 @@
 // Wczytuje po stronie serwera pliki Markdown tworzące bazę wiedzy o autorze portfolio.
+import "server-only";
 import fs from "fs/promises";
 import path from "path";
 import { logErrorEvent } from "./logger";

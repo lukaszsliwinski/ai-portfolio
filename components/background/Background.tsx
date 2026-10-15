@@ -7,7 +7,6 @@ import {
   BufferGeometry,
   Color,
   Float32BufferAttribute,
-  HemisphereLight,
   PerspectiveCamera,
   Points,
   PointsMaterial,
@@ -72,9 +71,6 @@ export default function Background() {
     // Create star points and add to scene
     const stars = new Points(geo, mat);
     scene.add(stars);
-
-    // Add hemisphere light
-    scene.add(new HemisphereLight(0xffffff, 0x444444));
 
     // Animation variables for star movement based on scroll
     let scrollPosY = 0;

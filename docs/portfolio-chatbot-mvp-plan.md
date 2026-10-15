@@ -159,14 +159,13 @@ The API sends JSON Lines events that distinguish assistant text from provider er
 
 Assistant responses may use markdown for:
 
-- short lists,
+- short bullet lists,
 - bold emphasis,
-- simple paragraphs,
-- readable formatting.
+- simple paragraphs.
 
 Raw HTML from the model should not be rendered.
 
-Markdown rendering must be configured safely.
+The renderer supports this small Markdown subset. Other syntax remains plain text, and content is rendered safely using React text nodes and elements.
 
 ## Security and abuse protection
 

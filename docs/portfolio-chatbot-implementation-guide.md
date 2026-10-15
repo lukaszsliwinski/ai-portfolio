@@ -216,6 +216,8 @@ chat/model/provider.ts
 
 The chat flow should call Gemini through `chat/service.ts`. Client Components must not import the Gemini SDK or the server-side provider module.
 
+`chat/config.ts`, `chat/knowledge.ts`, and `chat/model/provider.ts` use `import "server-only"` to prevent imports into Client Components. `chat/types.ts` remains shared between the server and client.
+
 Use Gemini's streaming API for assistant responses.
 
 `chat/service.ts` passes conversation history and the generated system prompt as separate arguments to `streamChat(messages, systemPrompt)`. The provider maps the history to Gemini's content format and sets the prompt directly as `config.systemInstruction`.
@@ -399,20 +401,15 @@ Do not store conversations in a database for MVP.
 
 ## Markdown rendering
 
-Assistant messages may render markdown safely.
+`components/chat/ChatMessage.tsx` renders a small Markdown subset:
 
-Allowed formatting:
+- paragraphs and blank-line spacing,
+- bold text marked with `**text**`,
+- simple bullet lists with lines beginning with `- ` or `* `.
 
-- paragraphs,
-- bold,
-- italic,
-- bullet lists,
-- numbered lists,
-- inline code if useful.
+Other Markdown syntax, including italic, numbered lists and backticks, remains plain text. The system prompt requests paragraphs, bold text and `- ` bullet lists.
 
-Do not render raw HTML from model output.
-
-Use a safe markdown rendering setup and avoid dangerous HTML plugins.
+The renderer uses React elements and text nodes without `dangerouslySetInnerHTML`, so HTML from model output is displayed as text rather than interpreted as markup. No Markdown library or HTML plugins are needed for this scope.
 
 ## Error states
 

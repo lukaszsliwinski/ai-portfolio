@@ -1,4 +1,6 @@
 // Przechowuje limity chatu i odczytuje konfigurację modelu dopiero przy wywołaniu.
+import "server-only";
+
 function env(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`Missing env variable: ${name}`);
