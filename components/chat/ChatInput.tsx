@@ -65,7 +65,7 @@ export function ChatInput({
         disabled={isDisabled}
         title="Clear Conversation"
         aria-label="Clear conversation history"
-        className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-app-mid-dark bg-app-mid-dark/20 text-app-text transition-all hover:bg-app-mid-dark/30 hover:text-app-foreground focus:outline-none active:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-app-mid-dark bg-app-mid-dark/20 text-app-text transition-all hover:bg-app-mid-dark/30 hover:text-app-foreground focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-main active:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <FaWrapper icon={faRotateLeft} size={16} />
       </button>

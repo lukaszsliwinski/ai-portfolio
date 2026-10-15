@@ -39,7 +39,7 @@ export default function NavBar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title={link.title}
-                className="p-2.5"
+                className="p-2.5 pb-1"
               >
                 <FaWrapper icon={link.icon} size={22} />
               </Link>
