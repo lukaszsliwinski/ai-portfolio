@@ -2,7 +2,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { getModelConfig, limits } from "@/chat/config";
 import { logChatMessage, logErrorEvent } from "@/chat/logger";
-import type { ChatStreamEvent, LLMMessage } from "@/chat/types";
+import type { ChatRequestMessage, ChatStreamEvent } from "@/chat/types";
 
 /** Extracts a friendly user-facing error message from Google API errors. */
 function parseGoogleError(error: unknown): string {
@@ -35,17 +35,18 @@ function parseGoogleError(error: unknown): string {
  * Streams a chat response from Gemini.
  * Emits JSON Lines events for text and user-facing errors.
  */
-export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
+export function streamChat(
+  messages: ChatRequestMessage[],
+  systemPrompt: string,
+): ReadableStream<Uint8Array> {
   const modelConfig = getModelConfig();
   const ai = new GoogleGenAI({ apiKey: modelConfig.apiKey });
 
-  const systemMessage = messages.find((m) => m.role === "system");
-  const conversation = messages.filter((m) => m.role !== "system");
-  const userMessage = [...conversation]
+  const userMessage = [...messages]
     .reverse()
     .find((message) => message.role === "user")?.content;
 
-  const contents = conversation.map((m) => ({
+  const contents = messages.map((m) => ({
     role: m.role === "assistant" ? "model" : "user",
     parts: [{ text: m.content }],
   }));
@@ -68,7 +69,7 @@ export function streamChat(messages: LLMMessage[]): ReadableStream<Uint8Array> {
           contents,
           config: {
             abortSignal: abortController.signal,
-            systemInstruction: systemMessage?.content,
+            systemInstruction: systemPrompt,
             maxOutputTokens: limits.maxAssistantOutputTokens,
           },
         });

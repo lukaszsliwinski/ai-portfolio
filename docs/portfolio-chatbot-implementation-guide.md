@@ -83,7 +83,6 @@ components/
     ChatSection.tsx
     ChatWindow.tsx
     SuggestedQuestions.tsx
-    types.ts
   projects/
   footer/
   ui/
@@ -133,7 +132,7 @@ tsconfig.json
 
 The project uses root-level directories without a `src/` directory. Follow this existing convention.
 
-`chat/types.ts` defines shared request, model message, and stream event types. `chat/stream.ts` decodes the JSON Lines response stream on the client. `components/chat/types.ts` defines UI message types and reuses the shared chat role. Knowledge types are internal to `chat/knowledge.ts`.
+`chat/types.ts` defines shared request, UI message, and stream event types. `ChatRequestMessage` is also used to pass conversation history to the model provider. `ChatUiMessage` extends it with an `id` used by the UI. `chat/stream.ts` decodes the JSON Lines response stream on the client.
 
 `public/` contains static assets. `chat/logger.ts` creates runtime JSONL files in `logs/`, which is ignored by Git; `docker-compose.yml` mounts the host's `./logs` directory at `/app/logs` in the container.
 
@@ -190,7 +189,7 @@ Do not include private data, secrets, API keys, confidential project details, or
 
 ## Content loading
 
-The server-side content loader is implemented in `chat/knowledge.ts`. Its internal `loadKnowledge()` reads the six Markdown files from `chat/data/`, and `formatKnowledge()` combines them into the assistant's factual context. The public `getKnowledge()` function returns the formatted string and is called by `chat/service.ts`, which passes it to `getSystemPrompt()` in `chat/model/system-prompt.ts`.
+The server-side content loader is implemented in `chat/knowledge.ts`. Its `getKnowledge()` function reads the six Markdown files from `chat/data/` in parallel, using an ordered list of filenames. It trims each file and joins the contents with blank lines, preserving the list order and the files' own Markdown headings. `chat/service.ts` passes the resulting string to `getSystemPrompt()` in `chat/model/system-prompt.ts`.
 
 Requirements:
 
@@ -218,6 +217,8 @@ chat/model/provider.ts
 The chat flow should call Gemini through `chat/service.ts`. Client Components must not import the Gemini SDK or the server-side provider module.
 
 Use Gemini's streaming API for assistant responses.
+
+`chat/service.ts` passes conversation history and the generated system prompt as separate arguments to `streamChat(messages, systemPrompt)`. The provider maps the history to Gemini's content format and sets the prompt directly as `config.systemInstruction`.
 
 `chat/config.ts` exports the static `limits` object and the `getModelConfig()` function. The latter reads the API key and model name from environment variables only when called by `streamChat()`. Importing this module does not read or require environment variables, so the application can build without Gemini configuration.
 

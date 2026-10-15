@@ -2,7 +2,7 @@
 
 // Buduje okno rozmowy z historią wiadomości, automatycznym przewijaniem, stanami ładowania i formularzem.
 import { useEffect, useRef } from "react";
-import type { ChatUiMessage } from "./types";
+import type { ChatUiMessage } from "@/chat/types";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import AssistantAvatar from "./AssistantAvatar";

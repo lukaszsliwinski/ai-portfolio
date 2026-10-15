@@ -1,17 +1,15 @@
-// used in chat/security/validate-request.ts and components/chat/types.ts
+// Roles shared by API requests and UI messages.
 export const CHAT_ROLES = ["user", "assistant"] as const;
 export type ChatRole = (typeof CHAT_ROLES)[number];
 
-// used in chat/security/validate-request.ts and chat/service.ts
+// Conversation messages shared by request validation, service, provider and UI.
 export interface ChatRequestMessage {
   role: ChatRole;
   content: string;
 }
 
-// used in chat/model/provider.ts and chat/service.ts
-export interface LLMMessage {
-  role: ChatRole | "system";
-  content: string;
+export interface ChatUiMessage extends ChatRequestMessage {
+  id: string;
 }
 
 // Events sent as JSON Lines by the provider and read by the chat client.

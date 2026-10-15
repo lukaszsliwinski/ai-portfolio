@@ -5,7 +5,7 @@ import { useState, useRef } from "react";
 
 import ChatWindow from "./ChatWindow";
 import SuggestedQuestions from "./SuggestedQuestions";
-import type { ChatUiMessage } from "./types";
+import type { ChatUiMessage } from "@/chat/types";
 import { readChatStream } from "@/chat/stream";
 
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -18,10 +18,6 @@ interface ChatSectionProps {
   maxMessages: number;
 }
 
-const createWelcomeMessages = (): ChatUiMessage[] => [
-  { ...DEFAULT_WELCOME_MESSAGE, timestamp: new Date() },
-];
-
 const createMessage = (
   role: ChatUiMessage["role"],
   content: string,
@@ -29,16 +25,15 @@ const createMessage = (
   id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
   role,
   content,
-  timestamp: new Date(),
 });
 
 export default function ChatSection({
   maxMessageLength,
   maxMessages,
 }: ChatSectionProps) {
-  const [messages, setMessages] = useState<ChatUiMessage[]>(
-    createWelcomeMessages,
-  );
+  const [messages, setMessages] = useState<ChatUiMessage[]>([
+    DEFAULT_WELCOME_MESSAGE,
+  ]);
   const [isThinking, setIsThinking] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -133,7 +128,7 @@ export default function ChatSection({
 
   const handleClearChat = () => {
     if (isSendingRef.current) return;
-    setMessages(createWelcomeMessages());
+    setMessages([DEFAULT_WELCOME_MESSAGE]);
     setError(null);
   };
 

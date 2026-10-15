@@ -1,6 +1,5 @@
 // Obsługuje endpoint POST chatu: zabezpiecza i waliduje żądanie, pilnuje limitów oraz zwraca strumień odpowiedzi Gemini.
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { validateChatRequest } from "@/chat/security/validate-request";
 import { checkRateLimit } from "@/chat/security/rate-limit";
 import { createChatStream } from "@/chat/service";
@@ -31,7 +30,7 @@ export async function POST(request: NextRequest) {
   let userMessage: string | undefined;
 
   try {
-    const headersList = await headers();
+    const headersList = request.headers;
     const clientIp =
       headersList.get("x-forwarded-for")?.split(",")[0].trim() ||
       headersList.get("x-real-ip") ||

@@ -1,7 +1,7 @@
 // Renderuje wiadomość użytkownika lub asystenta, bezpiecznie obsługując podstawowe formatowanie Markdown.
 import React from "react";
 import AssistantAvatar from "./AssistantAvatar";
-import type { ChatUiMessage } from "./types";
+import type { ChatUiMessage } from "@/chat/types";
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {

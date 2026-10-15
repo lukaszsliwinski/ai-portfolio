@@ -22,7 +22,7 @@ Do not implement future-scope features unless explicitly requested.
 - `chat/stream.ts` decodes the JSON Lines response stream for the client; `chat/types.ts` defines the shared stream event types.
 - `chat/model/provider.ts` contains the Gemini integration; `chat/model/system-prompt.ts` defines the system prompt.
 - `chat/security/` contains request validation and rate limiting.
-- `chat/knowledge.ts` contains knowledge loading, formatting, and internal knowledge types, exposed through `getKnowledge()`.
+- `chat/knowledge.ts` reads and joins the Markdown knowledge files through `getKnowledge()`.
 - `chat/data/` contains the chatbot's Markdown knowledge files.
 - `lib/` contains shared utilities and constants.
 

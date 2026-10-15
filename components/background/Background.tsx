@@ -2,7 +2,18 @@
 
 // Renderuje animowane tło 3D z gwiazdami, które reaguje na przewijanie i zmianę rozmiaru okna.
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
+import {
+  AdditiveBlending,
+  BufferGeometry,
+  Color,
+  Float32BufferAttribute,
+  HemisphereLight,
+  PerspectiveCamera,
+  Points,
+  PointsMaterial,
+  Scene,
+  WebGLRenderer,
+} from "three";
 import Reveal from "@/components/ui/Reveal";
 
 // 3D background component with animated stars, rendered using Three.js
@@ -13,14 +24,14 @@ export default function Background() {
   useEffect(() => {
     const w = window.innerWidth;
     const h = window.innerHeight;
-    const scene = new THREE.Scene();
+    const scene = new Scene();
 
     // Perspective camera
-    const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+    const camera = new PerspectiveCamera(75, w / h, 0.1, 1000);
     camera.position.z = 5;
 
     // WebGL renderer z przezroczystością
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(w, h);
 
     if (bgRef.current) {
@@ -43,27 +54,27 @@ export default function Background() {
       const z = radius * Math.cos(phi);
 
       // Random star color
-      const col = new THREE.Color().setHSL(0.6, 0.2, Math.random());
+      const col = new Color().setHSL(0.6, 0.2, Math.random());
       verts.push(x, y, z);
       colors.push(col.r, col.g, col.b);
     }
 
     // Buffer geometry and material for stars
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.Float32BufferAttribute(verts, 3));
-    geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-    const mat = new THREE.PointsMaterial({
+    const geo = new BufferGeometry();
+    geo.setAttribute("position", new Float32BufferAttribute(verts, 3));
+    geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
+    const mat = new PointsMaterial({
       size: 0.05,
       vertexColors: true,
-      blending: THREE.AdditiveBlending,
+      blending: AdditiveBlending,
     });
 
     // Create star points and add to scene
-    const stars = new THREE.Points(geo, mat);
+    const stars = new Points(geo, mat);
     scene.add(stars);
 
     // Add hemisphere light
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444));
+    scene.add(new HemisphereLight(0xffffff, 0x444444));
 
     // Animation variables for star movement based on scroll
     let scrollPosY = 0;

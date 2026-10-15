@@ -3,88 +3,26 @@ import fs from "fs/promises";
 import path from "path";
 import { logErrorEvent } from "./logger";
 
-interface KnowledgeData {
-  profile: string;
-  experience: string;
-  skills: string;
-  projects: string;
-  interests: string;
-  recruiterFaq: string;
-}
+const knowledgeFiles = [
+  "profile.md",
+  "experience.md",
+  "skills.md",
+  "projects.md",
+  "interests.md",
+  "recruiter-faq.md",
+];
 
-// Zamienia ustrukturyzowane dane portfolio na tekstowy kontekst Markdown przekazywany do promptu Gemini.
-/**
- * Formats structured knowledge data into a single coherent Markdown string
- * that can be appended to the LLM system prompt context.
- */
-function formatKnowledge(data: KnowledgeData): string {
-  const {
-    profile,
-    experience,
-    skills,
-    projects,
-    interests,
-    recruiterFaq,
-  } = data;
-
-  return `
-# DEVELOPER KNOWLEDGE BASE (FACTUAL CONTEXT)
-
-## 1. Professional Profile
-${profile.trim()}
-
-## 2. Work Experience
-${experience.trim()}
-
-## 3. Skills & Technologies
-${skills.trim()}
-
-## 4. Projects
-${projects.trim()}
-
-## 5. Interests & Focus
-${interests.trim()}
-
-## 6. Recruiter FAQs & Wording Guidelines
-${recruiterFaq.trim()}
-`.trim();
-}
-
-
-
-
-/**
- * Loads developer knowledge files from the local filesystem.
- * This function is intended to run only on the server.
- */
-async function loadKnowledge(): Promise<KnowledgeData> {
+export async function getKnowledge(): Promise<string> {
   const contentDir = path.join(process.cwd(), "chat", "data");
 
   try {
-    const [
-      profile,
-      experience,
-      skills,
-      projects,
-      interests,
-      recruiterFaq,
-    ] = await Promise.all([
-      fs.readFile(path.join(contentDir, "profile.md"), "utf-8"),
-      fs.readFile(path.join(contentDir, "experience.md"), "utf-8"),
-      fs.readFile(path.join(contentDir, "skills.md"), "utf-8"),
-      fs.readFile(path.join(contentDir, "projects.md"), "utf-8"),
-      fs.readFile(path.join(contentDir, "interests.md"), "utf-8"),
-      fs.readFile(path.join(contentDir, "recruiter-faq.md"), "utf-8"),
-    ]);
+    const contents = await Promise.all(
+      knowledgeFiles.map((file) =>
+        fs.readFile(path.join(contentDir, file), "utf-8"),
+      ),
+    );
 
-    return {
-      profile,
-      experience,
-      skills,
-      projects,
-      interests,
-      recruiterFaq,
-    };
+    return contents.map((content) => content.trim()).join("\n\n");
   } catch (error) {
     logErrorEvent({
       type: "knowledge_error",
@@ -95,16 +33,3 @@ async function loadKnowledge(): Promise<KnowledgeData> {
     );
   }
 }
-
-
-// Jedna funkcja do wczytywania i formatowania wiedzy, wystawiona na zewnątrz.
-export async function getKnowledge(): Promise<string> {
-  return formatKnowledge(await loadKnowledge());
-}
-
-
-
-
-
-
-
