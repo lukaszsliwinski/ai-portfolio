@@ -42,7 +42,7 @@ export default function Landing() {
             width={200}
             height={200}
           />
-          <SectionHeader main="Lorem Ipsum" sub="lorem" subColored="ipsum" />
+          <SectionHeader main="Łukasz Śliwiński" sub="Frontend" subColored="Developer" />
           <p>{LANDING_TEXT}</p>
 
           <div className="flex flex-col gap-3">

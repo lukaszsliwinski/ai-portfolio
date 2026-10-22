@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 
 import ChatWindow from "./ChatWindow";
 import SuggestedQuestions from "./SuggestedQuestions";
@@ -10,7 +11,11 @@ import { readChatStream } from "@/chat/stream";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/ui/Reveal";
 
-import { CHAT_TEXT, DEFAULT_WELCOME_MESSAGE } from "@/lib/constants";
+import {
+  CHAT_PRIVACY_NOTE,
+  CHAT_TEXT,
+  DEFAULT_WELCOME_MESSAGE,
+} from "@/lib/constants";
 
 interface ChatSectionProps {
   maxMessageLength: number;
@@ -153,6 +158,15 @@ export default function ChatSection({
         <Reveal className="flex max-w-xl flex-1 flex-col gap-6">
           <SectionHeader main="Portfolio Assistant" />
           <p>{CHAT_TEXT}</p>
+          <Reveal className="flex items-start gap-3 rounded-md border border-app-main/30 bg-app-main/10 px-4 py-3 text-xs text-app-foreground">
+            <p className="text-left">
+              {CHAT_PRIVACY_NOTE}{" "}
+              <Link
+                href="/privacy"
+                className="font-semibold text-app-main underline underline-offset-2 hover:opacity-80"
+              >Learn more</Link>
+            </p>
+          </Reveal>
           <SuggestedQuestions
             onSelectQuestion={handleSendMessage}
             isDisabled={isSending}

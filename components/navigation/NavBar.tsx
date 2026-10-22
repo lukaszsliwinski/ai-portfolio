@@ -21,9 +21,9 @@ export default function NavBar() {
             <FaWrapper icon={faHexagonNodes} size={18} />
           </div>
 
-          <h1 className="text-lg font-extrabold tracking-tight max-sm:hidden">
+          <a href="/" className="text-lg font-extrabold tracking-tight max-sm:hidden">
             Frontend Portfolio<span className="text-app-main"> Website</span>.
-          </h1>
+          </a>
         </div>
 
         <StaggerReveal delay={0.5} className="flex items-center gap-2">
