@@ -1,5 +1,3 @@
-// Testy parsera strumienia (5): składanie fragmentów, Unicode, pusta odpowiedź, błędy połączenia i kończenie odczytu.
-
 import { describe, expect, it, vi } from "vitest";
 import { readChatStream } from "@/chat/stream";
 import type { ChatStreamEvent } from "@/chat/types";
@@ -24,7 +22,6 @@ async function collectEvents(
 }
 
 describe("readChatStream", () => {
-  // Sprawdza kolejność tekstu i błędu, bo jeden odczyt sieciowy może zawierać kilka zdarzeń.
   it("reads multiple newline-separated events in one chunk", async () => {
     const events: ChatStreamEvent[] = [
       { type: "text", content: "Hello" },
@@ -37,7 +34,7 @@ describe("readChatStream", () => {
     ).resolves.toEqual(events);
   });
 
-  // Sprawdza każdy podział bajtów, bo fragment sieciowy może kończyć się wewnątrz JSON-a lub emoji.
+  // A network chunk can end inside the JSON or inside a multi-byte character.
   it("preserves JSON and Unicode across every possible byte split", async () => {
     const event: ChatStreamEvent = { type: "text", content: "Zażółć 😀" };
     const bytes = encoder.encode(JSON.stringify(event) + "\n");
@@ -51,12 +48,10 @@ describe("readChatStream", () => {
     }
   });
 
-  // Sprawdza poprawne zakończenie odczytu, gdy provider zamknie odpowiedź bez tekstu.
   it("accepts an empty stream", async () => {
     await expect(collectEvents(streamFromChunks([]))).resolves.toEqual([]);
   });
 
-  // Sprawdza przekazanie błędu i zwolnienie czytnika po utracie połączenia.
   it("propagates network read failures and releases the stream lock", async () => {
     const stream = new ReadableStream<Uint8Array>({
       start(controller) {
@@ -68,7 +63,7 @@ describe("readChatStream", () => {
     expect(stream.locked).toBe(false);
   });
 
-  // Sprawdza anulowanie odczytu i zwolnienie czytnika, gdy UI wcześniej opuści pętlę, np. po błędzie.
+  // The UI leaves the loop early after an error event.
   it("cancels the source when the consumer stops reading early", async () => {
     const cancel = vi.fn();
     const event: ChatStreamEvent = { type: "text", content: "First fragment" };

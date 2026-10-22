@@ -1,5 +1,3 @@
-// Testy limitera (4): blokada po wyczerpaniu limitu, niezależność IP i odnowienie limitu.
-
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { limits } from "@/chat/config";
 
@@ -10,7 +8,7 @@ let checkRateLimit: typeof import("@/chat/security/rate-limit").checkRateLimit;
 beforeEach(async () => {
   vi.useFakeTimers();
   vi.setSystemTime(startTime);
-  // Wczytuje moduł ponownie, aby testy nie współdzieliły liczników zapisanych w pamięci.
+  // Fresh module per test: the counters live in module scope.
   vi.resetModules();
   ({ checkRateLimit } = await import("@/chat/security/rate-limit"));
 });
@@ -24,7 +22,7 @@ function exhaustLimit(ip: string) {
 }
 
 describe("checkRateLimit", () => {
-  // Sprawdza dozwoloną liczbę żądań i blokadę kolejnego, aby limit nie był przesunięty o jeden.
+  // Guards against an off-by-one at the limit.
   it("allows the configured number of requests and blocks the next one", () => {
     for (let i = 0; i < limits.rateLimitRequests; i++) {
       expect(checkRateLimit("192.0.2.1").success).toBe(true);
@@ -36,7 +34,6 @@ describe("checkRateLimit", () => {
     });
   });
 
-  // Sprawdza niezależność IP, aby wyczerpanie limitu przez jedną osobę nie blokowało pozostałych.
   it("keeps independent counters for different IP addresses", () => {
     exhaustLimit("192.0.2.1");
 
@@ -44,7 +41,6 @@ describe("checkRateLimit", () => {
     expect(checkRateLimit("192.0.2.2").success).toBe(true);
   });
 
-  // Sprawdza odnowienie pełnej puli po upływie okna, aby blokada nie pozostawała na stałe.
   it("restores the full allowance after the window expires", () => {
     exhaustLimit("192.0.2.1");
     vi.setSystemTime(startTime.getTime() + windowMs + 1);
@@ -55,7 +51,6 @@ describe("checkRateLimit", () => {
     expect(checkRateLimit("192.0.2.1").success).toBe(false);
   });
 
-  // Sprawdza stały termin odnowienia, aby ponawianie żądań nie przedłużało blokady.
   it("does not extend the window when more requests arrive", () => {
     checkRateLimit("192.0.2.1");
     vi.setSystemTime(startTime.getTime() + windowMs / 2);

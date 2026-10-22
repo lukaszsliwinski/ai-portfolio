@@ -1,5 +1,8 @@
+// Parses the chat response in the browser. The server sends JSON Lines, but network
+// chunks don't line up with lines, so text is buffered and split here.
 import type { ChatStreamEvent } from "./types";
 
+// Validates the event shape before the UI touches it.
 function parseEvent(line: string): ChatStreamEvent {
   const event: unknown = JSON.parse(line);
 
@@ -24,7 +27,7 @@ function parseEvent(line: string): ChatStreamEvent {
   throw new Error("Invalid chat stream event.");
 }
 
-/** Reads complete JSON Lines events, regardless of network chunk boundaries. */
+// A single read can contain part of an event or several complete lines.
 export async function* readChatStream(
   stream: ReadableStream<Uint8Array>,
 ): AsyncGenerator<ChatStreamEvent> {
@@ -35,6 +38,8 @@ export async function* readChatStream(
   try {
     while (true) {
       const { done, value } = await reader.read();
+      // stream: true holds back a multi-byte character (e.g. "ł" or an emoji) split
+      // across chunks until the rest arrives; the final decode() flushes it.
       buffer += done
         ? decoder.decode()
         : decoder.decode(value, { stream: true });
@@ -47,12 +52,14 @@ export async function* readChatStream(
       }
 
       if (done) {
-        // Accept a complete final event even if the last newline was omitted.
+        // Accept a final event even without a trailing newline.
         if (buffer.trim()) yield parseEvent(buffer);
         return;
       }
     }
   } finally {
+    // Also runs when the consumer leaves the loop early (e.g. after an error
+    // event), so the connection is always closed.
     await reader.cancel().catch(() => undefined);
     reader.releaseLock();
   }

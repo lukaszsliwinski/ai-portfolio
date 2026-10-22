@@ -1,5 +1,3 @@
-// Testy providera Gemini (3): przekazywanie promptu i historii, strumieniowanie, limit odpowiedzi, obsługa błędu i wywołania loggera.
-
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GenerateContentParameters } from "@google/genai";
 import { limits } from "@/chat/config";
@@ -60,7 +58,6 @@ async function collectEvents(
 }
 
 describe("streamChat", () => {
-  // Sprawdza dane wysyłane do SDK, strumień i log rozmowy, aby zwykła odpowiedź zachowała cały przepływ.
   it("passes the prompt and history to Gemini, streams text and logs the reply", async () => {
     mocks.generateContentStream.mockResolvedValue(
       responseChunks(["I use ", "React."]),
@@ -93,7 +90,6 @@ describe("streamChat", () => {
     expect(mocks.logErrorEvent).not.toHaveBeenCalled();
   });
 
-  // Sprawdza limit na granicy emoji i sygnał anulowania, aby długa odpowiedź nie uszkodziła tekstu ani nie stała się błędem.
   it("caps the reply without splitting an emoji or emitting an error", async () => {
     const prefix = "a".repeat(limits.maxAssistantMessageLength - 1);
     mocks.generateContentStream.mockResolvedValue(
@@ -114,7 +110,6 @@ describe("streamChat", () => {
     expect(mocks.logErrorEvent).not.toHaveBeenCalled();
   });
 
-  // Sprawdza błąd po części odpowiedzi, aby klient dostał czytelny komunikat, a log zachował szczegóły i wysłany tekst.
   it("emits a friendly provider error and logs the partial reply", async () => {
     const partialReply = "I mainly work with ";
     const failure = new Error("429 RESOURCE_EXHAUSTED: test provider details");
@@ -145,7 +140,6 @@ describe("streamChat", () => {
     });
   });
 
-  // Sprawdza przeciążenie modelu przed startem strumienia, aby klient dostał zachętę do ponowienia zamiast ogólnego błędu.
   it("emits an overload message when Gemini responds with 503", async () => {
     const failure = new Error(
       '{"error":{"code":503,"message":"This model is currently experiencing high demand.","status":"UNAVAILABLE"}}',

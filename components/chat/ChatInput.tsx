@@ -1,6 +1,5 @@
 "use client";
 
-// Obsługuje pole wpisywania wiadomości, limit znaków, wysyłanie oraz czyszczenie rozmowy.
 import { useEffect, useRef, useState } from "react";
 import { faArrowUp, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import FaWrapper from "@/components/ui/FaWrapper";
@@ -21,7 +20,6 @@ export function ChatInput({
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Handle message submission
   const submit = () => {
     const message = value.trim();
 
@@ -31,7 +29,7 @@ export function ChatInput({
     onSendMessage(message);
   };
 
-  // Auto-resize the textarea based on content
+  // Reset first, so the field can also shrink when text is deleted.
   useEffect(() => {
     if (!inputRef.current) return;
 
@@ -39,7 +37,7 @@ export function ChatInput({
     inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 84)}px`;
   }, [value]);
 
-  // Auto-focus the textarea when not disabled
+  // Refocus after the reply; preventScroll stops the page from jumping to the input.
   useEffect(() => {
     if (!isDisabled) {
       inputRef.current?.focus({
@@ -48,7 +46,6 @@ export function ChatInput({
     }
   }, [isDisabled]);
 
-  // Count the number of characters in the input
   const count = value.length;
 
   return (
@@ -80,6 +77,8 @@ export function ChatInput({
           aria-label="Ask a question"
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
+            // Enter sends, Shift+Enter adds a new line.
+            // e.repeat stops a held key from sending repeatedly.
             if (e.key === "Enter" && !e.shiftKey && !e.repeat) {
               e.preventDefault();
               submit();

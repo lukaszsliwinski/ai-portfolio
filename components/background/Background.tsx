@@ -1,6 +1,5 @@
 "use client";
 
-// Renderuje animowane tło 3D z gwiazdami, które reaguje na przewijanie i zmianę rozmiaru okna.
 import { useEffect, useRef } from "react";
 import {
   AdditiveBlending,
@@ -15,8 +14,8 @@ import {
 } from "three";
 import { motion } from "motion/react";
 
-// 3D background component with animated stars, rendered using Three.js
-// inspired by: https://www.youtube.com/watch?v=1qpeo5ewz_8
+// Three.js starfield that drifts as the page scrolls.
+// Inspired by https://www.youtube.com/watch?v=1qpeo5ewz_8
 export default function Background() {
   const bgRef = useRef<HTMLDivElement>(null);
 
@@ -25,11 +24,10 @@ export default function Background() {
     const h = window.innerHeight;
     const scene = new Scene();
 
-    // Perspective camera
     const camera = new PerspectiveCamera(75, w / h, 0.1, 1000);
     camera.position.z = 5;
 
-    // WebGL renderer z przezroczystością
+    // alpha: true keeps the canvas transparent, so the CSS gradient shows through.
     const renderer = new WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(w, h);
 
@@ -37,12 +35,11 @@ export default function Background() {
       bgRef.current.appendChild(renderer.domElement);
     }
 
-    // Generate star positions and colors
     const verts: number[] = [];
     const colors: number[] = [];
 
     for (let i = 0; i < 2000; i++) {
-      // Random position on a sphere
+      // Uniformly distributed point in a spherical shell, radius 25-50.
       const radius = Math.random() * 25 + 25;
       const u = Math.random();
       const v = Math.random();
@@ -52,13 +49,12 @@ export default function Background() {
       const y = radius * Math.sin(phi) * Math.sin(theta);
       const z = radius * Math.cos(phi);
 
-      // Random star color
+      // Same hue for every star, random lightness.
       const col = new Color().setHSL(0.6, 0.2, Math.random());
       verts.push(x, y, z);
       colors.push(col.r, col.g, col.b);
     }
 
-    // Buffer geometry and material for stars
     const geo = new BufferGeometry();
     geo.setAttribute("position", new Float32BufferAttribute(verts, 3));
     geo.setAttribute("color", new Float32BufferAttribute(colors, 3));
@@ -68,26 +64,23 @@ export default function Background() {
       blending: AdditiveBlending,
     });
 
-    // Create star points and add to scene
     const stars = new Points(geo, mat);
     scene.add(stars);
 
-    // Animation variables for star movement based on scroll
     let scrollPosY = 0;
     const rate = 0.1;
     let goalPos = 0;
 
-    // Animation loop
     function animate() {
       requestAnimationFrame(animate);
       goalPos = Math.PI * scrollPosY;
-      // Smoothly move stars along Z axis
+      // Ease towards the target instead of jumping, so scrolling feels smooth.
       stars.position.z -= (stars.position.z - goalPos * 8) * rate;
       renderer.render(scene, camera);
     }
     animate();
 
-    // Scroll handler - update position
+    // Scroll progress (0-1) sets the star depth.
     const handleScroll = () => {
       const scrollTop = document.documentElement.scrollTop;
       const scrollHeight =
@@ -95,7 +88,6 @@ export default function Background() {
       scrollPosY = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
     };
 
-    // Window resize handler
     const handleResize = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
@@ -105,7 +97,6 @@ export default function Background() {
     };
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleResize);
-    // Cleanup on component unmount
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
@@ -113,9 +104,9 @@ export default function Background() {
     };
   }, []);
 
-  // Tło jest zawsze w widoku, więc pojawia się po załadowaniu, a nie po przewinięciu.
-  // Przezroczystość na samym elemencie fixed nie wyciąga go nad treść strony,
-  // a pointer-events-none gwarantuje, że tło nigdy nie przechwyci kliknięć.
+  // Fades in on mount, not on scroll. Wrapped in Reveal, this fixed layer would
+  // sit in a stacking context above the page and block clicks.
+  // pointer-events-none is a safety net.
   return (
     <motion.div
       ref={bgRef}

@@ -1,4 +1,4 @@
-// Zapisywanie historii rozmów oraz błędów w katalogu /logs, w osobnym pliku na każdy dzień.
+// JSON Lines audit logs, one file per day, in /logs (a host volume in Docker).
 import fs from "fs/promises";
 import path from "path";
 import { limits } from "@/chat/config";
@@ -24,17 +24,18 @@ const logsDir = path.join(process.cwd(), "logs");
 const retentionMs = limits.logRetentionDays * 24 * 60 * 60 * 1000;
 const datedLogPattern = /-(\d{4}-\d{2}-\d{2})\.jsonl$/;
 
-// Dzień ostatniego czyszczenia; nowy dzień uruchamia je przy pierwszym wpisie.
+// The first write of a new day triggers a cleanup.
 let lastCleanupDate: string | undefined;
 
-// Czas wpisów jest liczony dla Warszawy, niezależnie od strefy czasowej serwera.
+// Warsaw time regardless of the server's time zone.
+// The sv-SE locale happens to produce a sortable YYYY-MM-DD HH:mm:ss format.
 function getWarsawTimestamp(date = new Date()): string {
   return date
     .toLocaleString("sv-SE", { timeZone: "Europe/Warsaw" })
     .replace(" ", "T");
 }
 
-// Usuwa pliki dzienne starsze niż okres przechowywania; pliki bez daty w nazwie pozostają.
+// Only files with a date in the name are removed; nothing else in /logs is touched.
 async function removeExpiredLogs(): Promise<void> {
   const cutoffDate = getWarsawTimestamp(
     new Date(Date.now() - retentionMs),
@@ -51,7 +52,7 @@ async function removeExpiredLogs(): Promise<void> {
   );
 }
 
-// Awarię zgłaszamy raz do pliku awaryjnego, bez ponownego wywoływania loggera.
+// Written directly, not through appendJsonl, so a failing disk can't cause a loop.
 function reportLoggerFailure(
   message: string,
   error: unknown,
@@ -73,14 +74,15 @@ function reportLoggerFailure(
     .catch(() => undefined);
 }
 
-// Zapis do pliku JSONL z datą w nazwie, np. chat-audit-2026-01-31.jsonl.
+// e.g. chat-audit-2026-01-31.jsonl.
+// Fire-and-forget, so logging never delays a response.
 function appendJsonl(baseName: string, data: object): void {
   const timestamp = getWarsawTimestamp();
   const date = timestamp.slice(0, 10);
   const fileName = `${baseName}-${date}.jsonl`;
   const entry = JSON.stringify({ timestamp, ...data }) + "\n";
 
-  // Decyzja zapada od razu, aby równoległe wpisy nie uruchomiły czyszczenia kilka razy.
+  // Decided synchronously, so concurrent writes don't start the cleanup twice.
   const shouldCleanUp = lastCleanupDate !== date;
   lastCleanupDate = date;
 
@@ -97,13 +99,13 @@ function appendJsonl(baseName: string, data: object): void {
     });
 }
 
-// Jeden wpis łączy ostatnie pytanie z odpowiedzią, także częściową przy błędzie.
+// One entry per question, including replies cut off by an error.
 export function logChatMessage(payload: ChatLogPayload): void {
   const { userMessage, assistantMessage, error } = payload;
   appendJsonl("chat-audit", { userMessage, assistantMessage, error });
 }
 
-// Jawny wybór pól ogranicza wpis do rodzaju błędu, opisu i opcjonalnego pytania.
+// Fields are picked explicitly, so nothing unexpected ends up in the log.
 export function logErrorEvent(payload: ErrorLogPayload): void {
   const { type, error, userMessage } = payload;
   appendJsonl("error-audit", { type, error, userMessage });

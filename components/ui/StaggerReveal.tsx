@@ -1,6 +1,6 @@
 "use client";
 
-// Steruje sekwencyjnym pojawianiem się animowanych dzieci i udostępnia wspólne warianty animacji.
+// Children need variants={childVariants} to take part in the stagger.
 import { type ReactNode } from "react";
 import { motion, type Variants } from "motion/react";
 

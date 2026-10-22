@@ -1,6 +1,5 @@
 "use client";
 
-// Renderuje przyklejony pasek nawigacji z identyfikacją portfolio i linkami do profili zewnętrznych.
 import { faHexagonNodes } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "motion/react";
 import FaWrapper from "@/components/ui/FaWrapper";
@@ -14,7 +13,8 @@ export default function NavBar() {
     <Reveal
       variant="fade"
       delay={0.3}
-      className="sticky top-0 z-50 w-full border-b border-app-mid-dark bg-app-background/70 backdrop-blur-md">
+      className="sticky top-0 z-50 w-full border-b border-app-mid-dark bg-app-background/70 backdrop-blur-md"
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-2 text-app-foreground">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-app-main">
@@ -29,9 +29,9 @@ export default function NavBar() {
         <StaggerReveal delay={0.5} className="flex items-center gap-2">
           {LINKS.map((link) => (
             <motion.div
-                key={link.href}
-                variants={childVariants}
-                className="flex items-center justify-center transition-colors hover:text-app-foreground"
+              key={link.href}
+              variants={childVariants}
+              className="flex items-center justify-center transition-colors hover:text-app-foreground"
             >
               <a
                 href={link.href}

@@ -1,11 +1,12 @@
-// Integruje aplikację z Gemini: mapuje historię rozmowy, strumieniuje odpowiedź i zamienia błędy API na komunikaty dla użytkownika.
+// Server-only Gemini integration.
+// The client receives JSON Lines events, parsed in chat/stream.ts.
 import "server-only";
 import { GoogleGenAI } from "@google/genai";
 import { getModelConfig, limits } from "@/chat/config";
 import { logChatMessage, logErrorEvent } from "@/chat/logger";
 import type { ChatRequestMessage, ChatStreamEvent } from "@/chat/types";
 
-/** Extracts a friendly user-facing error message from Google API errors. */
+// Users get a short, readable message; the full SDK error stays in the server log.
 function parseGoogleError(error: unknown): string {
   if (!(error instanceof Error)) {
     return "The AI assistant encountered an unexpected error.";
@@ -21,6 +22,11 @@ function parseGoogleError(error: unknown): string {
     return "The AI provider is currently rate-limited by Google API quota. Please try again in a moment.";
   }
 
+  // Overload is usually temporary, so the message suggests trying again.
+  if (msg.includes("503") || msg.includes("unavailable")) {
+    return "The AI model is temporarily overloaded. Please try again in a moment.";
+  }
+
   if (msg.includes("404") || msg.includes("not_found")) {
     return "The configured AI model is unavailable.";
   }
@@ -32,10 +38,6 @@ function parseGoogleError(error: unknown): string {
   return "The AI assistant encountered an error while generating the response.";
 }
 
-/**
- * Streams a chat response from Gemini.
- * Emits JSON Lines events for text and user-facing errors.
- */
 export function streamChat(
   messages: ChatRequestMessage[],
   systemPrompt: string,
@@ -43,6 +45,7 @@ export function streamChat(
   const modelConfig = getModelConfig();
   const ai = new GoogleGenAI({ apiKey: modelConfig.apiKey });
 
+  // Only the latest question is logged, not the whole history sent by the client.
   const userMessage = [...messages]
     .reverse()
     .find((message) => message.role === "user")?.content;
@@ -55,6 +58,7 @@ export function streamChat(
   const encoder = new TextEncoder();
   const abortController = new AbortController();
 
+  // Returned right away; start() keeps pushing events as Gemini sends them.
   return new ReadableStream<Uint8Array>({
     async start(controller) {
       let responseLength = 0;
@@ -65,6 +69,7 @@ export function streamChat(
       };
 
       try {
+        // HTTP errors such as 503 are thrown here, before any text is sent.
         const response = await ai.models.generateContentStream({
           model: modelConfig.model,
           contents,
@@ -75,14 +80,18 @@ export function streamChat(
           },
         });
 
+        // Errors during generation are thrown from this loop,
+        // after part of the reply has already been sent.
         for await (const chunk of response) {
           const text = chunk.text;
           if (text) {
+            // The reply must fit the assistant history limit in
+            // validate-request.ts, or the next request would be rejected.
             const remainingLength =
               limits.maxAssistantMessageLength - responseLength;
             let limitedText = text.slice(0, remainingLength);
 
-            // Avoid cutting an emoji or another surrogate pair at the limit.
+            // Don't cut an emoji in half: drop a trailing high surrogate.
             if (
               limitedText.length === remainingLength &&
               /[\uD800-\uDBFF]$/.test(limitedText)
@@ -96,6 +105,8 @@ export function streamChat(
               responseLength += limitedText.length;
             }
 
+            // Stop Gemini from generating more. This is a normal end,
+            // so no error event is sent.
             if (text.length >= remainingLength) {
               abortController.abort();
               break;
@@ -103,7 +114,8 @@ export function streamChat(
           }
         }
       } catch (error) {
-        // Reaching the response limit is a normal end of the stream.
+        // The SDK may throw after our own abort. That is the
+        // expected end of a capped reply, not an error.
         if (abortController.signal.aborted) return;
 
         logErrorEvent({
@@ -115,6 +127,8 @@ export function streamChat(
         responseError = userError;
         sendEvent({ type: "error", message: userError });
       } finally {
+        // Also runs after the early return above. An empty reply
+        // without an error is still logged as a problem.
         if (userMessage) {
           logChatMessage({
             userMessage,

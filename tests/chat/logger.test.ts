@@ -1,5 +1,3 @@
-// Testy loggera (2): zapis do pliku z datą Warszawy i usuwanie plików starszych niż okres przechowywania.
-
 import fs from "fs/promises";
 import os from "os";
 import path from "path";
@@ -11,13 +9,13 @@ let logsDir: string;
 let logger: typeof import("@/chat/logger");
 
 beforeEach(async () => {
-  // Logger zapisuje w katalogu tymczasowym, a nie w logs/ projektu.
+  // Write to a temp dir instead of the project's logs/.
   tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "logger-test-"));
   logsDir = path.join(tempDir, "logs");
   vi.spyOn(process, "cwd").mockReturnValue(tempDir);
-  // Podmieniamy tylko zegar, aby operacje na plikach działały normalnie.
+  // Fake only Date, so real timers and file I/O keep working.
   vi.useFakeTimers({ toFake: ["Date"] });
-  // Wczytuje moduł ponownie, aby ścieżka logów i dzień czyszczenia nie przechodziły między testami.
+  // Fresh module per test: the logs path and the last cleanup date are module state.
   vi.resetModules();
   logger = await import("@/chat/logger");
 });
@@ -29,7 +27,7 @@ afterEach(async () => {
 });
 
 describe("logger", () => {
-  // Sprawdza datę w nazwie pliku według czasu Warszawy, aby wpis tuż po północy trafił do właściwego dnia.
+  // 23:30 UTC is already the next day in Warsaw.
   it("appends entries to a file named with the Warsaw date", async () => {
     vi.setSystemTime(new Date("2026-01-01T23:30:00Z"));
 
@@ -45,7 +43,6 @@ describe("logger", () => {
     });
   });
 
-  // Sprawdza usuwanie wygasłych plików dziennych, aby logi nie rosły bez końca, oraz pozostawienie pozostałych plików.
   it("removes dated log files older than the retention period", async () => {
     const now = new Date("2026-06-15T12:00:00Z");
     vi.setSystemTime(now);

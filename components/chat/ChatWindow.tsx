@@ -1,6 +1,5 @@
 "use client";
 
-// Buduje okno rozmowy z historią wiadomości, automatycznym przewijaniem, stanami ładowania i formularzem.
 import { useEffect, useRef } from "react";
 import type { ChatUiMessage } from "@/chat/types";
 import { ChatMessage } from "./ChatMessage";
@@ -11,7 +10,6 @@ interface ChatWindowProps {
   messages: ChatUiMessage[];
   isThinking: boolean;
   isSending: boolean;
-  /** Non-null when the last API call returned an error. */
   error: string | null;
   onSendMessage: (content: string) => void;
   onClearChat: () => void;
@@ -29,6 +27,7 @@ export default function ChatWindow({
 }: ChatWindowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Keep the newest message, the typing indicator or the error in view.
   useEffect(() => {
     if (!scrollRef.current) return;
 
@@ -54,7 +53,6 @@ export default function ChatWindow({
           <ChatMessage key={message.id} message={message} />
         ))}
 
-        {/* Loading indicator */}
         {isThinking && (
           <div className="flex w-full items-end gap-3 px-1">
             <AssistantAvatar />
@@ -67,7 +65,6 @@ export default function ChatWindow({
           </div>
         )}
 
-        {/* Error state */}
         {!isThinking && error && (
           <div role="alert" className="flex w-full items-start gap-3 px-1">
             <div className="flex-1 rounded-md border border-red-800/50 bg-red-950/60 px-4 py-3 text-red-300">

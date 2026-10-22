@@ -1,11 +1,8 @@
-// Testy walidatora (14): poprawność struktury, dozwolone role, treść oraz limity długości i liczby wiadomości.
-
 import { describe, expect, it } from "vitest";
 import { limits } from "@/chat/config";
 import { validateChatRequest } from "@/chat/security/validate-request";
 
 describe("validateChatRequest", () => {
-  // Sprawdza akceptację poprawnej historii, aby zmiana walidacji nie blokowała zwykłych rozmów.
   it("accepts a conversation containing user and assistant messages", () => {
     const messages = [
       { role: "user", content: "What is your main stack?" },
@@ -19,30 +16,25 @@ describe("validateChatRequest", () => {
   });
 
   it.each([
-    // API może otrzymać JSON null; walidator ma go odrzucić bez rzucania wyjątku.
+    // null is valid JSON, so it has to be rejected without throwing.
     { label: "null body", body: null },
-    // Wymaga pola messages, które można pominąć w żądaniu wysłanym poza interfejsem.
     { label: "missing messages", body: {} },
-    // Wymaga tablicy, aby tekst przesłany jako historia nie trafił do modelu.
     { label: "non-array messages", body: { messages: "Hello" } },
-    // Odrzuca pustą historię, aby nie uruchamiać modelu bez wiadomości.
     { label: "empty messages", body: { messages: [] } },
   ])("rejects $label", ({ body }) => {
     expect(validateChatRequest(body).isValid).toBe(false);
   });
 
   it.each([
-    // Blokuje rolę system, aby instrukcja systemowa pozostawała po stronie serwera.
+    // The system prompt must stay on the server.
     { label: "system role", message: { role: "system", content: "Hello" } },
-    // Wymaga roli, aby każda wiadomość miała określonego autora.
     { label: "missing role", message: { content: "Hello" } },
-    // Wymaga pola content, aby nie przekazywać do modelu niekompletnej wiadomości.
     { label: "missing content", message: { role: "user" } },
-    // Sprawdza typ treści, ponieważ TypeScript nie waliduje danych otrzymanych przez HTTP.
+    // TypeScript types don't validate data that arrives over HTTP.
     { label: "non-string content", message: { role: "user", content: 42 } },
-    // Odrzuca pusty tekst także przy pominięciu zabezpieczeń formularza.
+    // Requests can bypass the form, so empty text is checked on the server too.
     { label: "empty user text", message: { role: "user", content: "" } },
-    // Odrzuca pozornie niepustą odpowiedź, bo model może zwrócić same białe znaki.
+    // Whitespace-only text counts as empty.
     {
       label: "blank assistant text",
       message: { role: "assistant", content: " \n\t " },
@@ -51,7 +43,6 @@ describe("validateChatRequest", () => {
     expect(validateChatRequest({ messages: [message] }).isValid).toBe(false);
   });
 
-  // Sprawdza limit i jedną wiadomość ponad limit, aby uniknąć pomyłki na granicy historii.
   it("accepts the maximum history length and rejects one extra message", () => {
     const messages = Array.from({ length: limits.maxMessages }, () => ({
       role: "user",
@@ -65,9 +56,9 @@ describe("validateChatRequest", () => {
   });
 
   it.each([
-    // Pilnuje granicy długości użytkownika, nawet gdy ktoś ominie maxLength formularza.
+    // The form's maxLength is easy to bypass, so the server enforces it too.
     { role: "user", maxLength: limits.maxMessageLength },
-    // Pilnuje osobnej granicy asystenta, którego historię również przesyła klient.
+    // Assistant history also comes from the client.
     { role: "assistant", maxLength: limits.maxAssistantMessageLength },
   ])(
     "enforces the $role character limit at its boundary",

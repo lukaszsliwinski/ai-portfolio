@@ -1,11 +1,10 @@
-// Obsługuje endpoint POST chatu: zabezpiecza i waliduje żądanie, pilnuje limitów oraz zwraca strumień odpowiedzi Gemini.
 import { NextRequest, NextResponse } from "next/server";
 import { validateChatRequest } from "@/chat/security/validate-request";
 import { checkRateLimit } from "@/chat/security/rate-limit";
 import { createChatStream } from "@/chat/service";
 import { logChatMessage, logErrorEvent } from "@/chat/logger";
 
-/** Formats seconds into human-readable hours and minutes rounded up. */
+// Rounds up to whole minutes, so the user never sees "0 minutes".
 function formatWaitTime(totalSeconds: number): string {
   const totalMinutes = Math.max(1, Math.ceil(totalSeconds / 60));
   const hours = Math.floor(totalMinutes / 60);
@@ -20,23 +19,19 @@ function formatWaitTime(totalSeconds: number): string {
   return `${hours} ${hours === 1 ? "hour" : "hours"} ${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
 }
 
-/**
- * POST /api/chat
- *
- * Validates request, checks Same-Origin & Rate Limits,
- * constructs system prompt, and streams Gemini response.
- */
 export async function POST(request: NextRequest) {
   let userMessage: string | undefined;
 
   try {
     const headersList = request.headers;
+    // Only safe behind a proxy that sets these headers (Traefik in production).
     const clientIp =
       headersList.get("x-forwarded-for")?.split(",")[0].trim() ||
       headersList.get("x-real-ip") ||
       "127.0.0.1";
 
-    // Same-Origin Guard: block cross-origin browser requests
+    // Browsers always send Origin on cross-site POSTs,
+    // so a mismatch means another site is calling the API.
     const origin = headersList.get("origin");
     const host = headersList.get("host");
     if (origin && host) {
@@ -53,7 +48,7 @@ export async function POST(request: NextRequest) {
           );
         }
       } catch {
-        // Ignore invalid origin format
+        // A malformed Origin is ignored; validation and the rate limit still apply.
       }
     }
 
@@ -73,7 +68,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse request body
     let body: unknown;
     try {
       body = await request.json();
@@ -88,7 +82,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate structure and limits
     const validation = validateChatRequest(body);
     if (!validation.isValid) {
       logErrorEvent({
@@ -100,24 +93,28 @@ export async function POST(request: NextRequest) {
 
     const { messages } = validation.data;
 
-    // Keep the question available if setup fails before the provider starts.
+    // Kept for the error log in case something fails before the stream starts.
     userMessage = [...messages]
       .reverse()
       .find((m) => m.role === "user")?.content;
 
-    // Build the knowledge-grounded prompt and stream the Gemini response
+    // From here on, errors are sent inside the stream, not as an HTTP status.
     const stream = await createChatStream(messages);
 
     return new Response(stream, {
       headers: { "Content-Type": "application/x-ndjson; charset=utf-8" },
     });
   } catch (error: unknown) {
+    // Internal error details go to the log only, never to the client.
     const message =
       error instanceof Error ? error.message : "An unexpected error occurred.";
     logErrorEvent({ type: "api_error", error: message, userMessage });
     if (userMessage) {
       logChatMessage({ userMessage, assistantMessage: "", error: message });
     }
-    return NextResponse.json({ error: "Something went wrong. Please try again later." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Something went wrong. Please try again later." },
+      { status: 500 },
+    );
   }
 }

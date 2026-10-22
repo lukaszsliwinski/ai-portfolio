@@ -1,4 +1,5 @@
-// Wczytuje po stronie serwera pliki Markdown tworzące bazę wiedzy o autorze portfolio.
+// The knowledge base is small enough to send in full with every request,
+// so there is no retrieval step.
 import "server-only";
 import fs from "fs/promises";
 import path from "path";

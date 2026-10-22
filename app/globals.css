@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-    --main: #818cf8;
-    --foreground: #ededed;
-    --background: #0a0a0a;
-    --text: #9f9fa9; /* zinc-400 */
-    --mid-light: #3f3f46; /* zinc-700 */
-    --mid-dark: #27272a; /* zinc-800 */
+  --main: #818cf8;
+  --foreground: #ededed;
+  --background: #0a0a0a;
+  --text: #9f9fa9; /* zinc-400 */
+  --mid-light: #3f3f46; /* zinc-700 */
+  --mid-dark: #27272a; /* zinc-800 */
 }
 
 @theme inline {
@@ -34,7 +34,6 @@ p {
   text-align: justify;
 }
 
-/* Minimal scrollbar */
 .scrollbar-minimal {
   scrollbar-width: thin;
   scrollbar-color: var(--mid-light) transparent;
@@ -62,8 +61,6 @@ p {
   background: linear-gradient(to bottom, var(--background) 0%, rgb(from var(--main) r g b / 6%) 50%);
 }
 
-
-/* AI Assistant Typing Bounce Animation (Tailwind v4) */
 @keyframes typing-bounce {
   0%, 100% {
     transform: translateY(0);
@@ -86,4 +83,3 @@ p {
 @utility animate-typing-dot-3 {
   animation: typing-bounce 1.2s infinite ease-in-out 0.4s;
 }
-

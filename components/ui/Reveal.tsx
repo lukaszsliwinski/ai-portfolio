@@ -1,6 +1,7 @@
 "use client";
 
-// Zapewnia animację pojawienia się elementu, opcjonalnie z ruchem pionowym.
+// Plays once, the first time the element scrolls into view.
+// Not for fixed elements: the opacity creates a stacking context (see Background.tsx).
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
 

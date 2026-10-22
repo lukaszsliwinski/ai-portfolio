@@ -1,4 +1,4 @@
-// Waliduje strukturę, role, zawartość i limity historii wiadomości przesyłanej do endpointu chatu.
+// The client sends the whole history, so every message is validated.
 import { limits } from "@/chat/config";
 import { CHAT_ROLES } from "@/chat/types";
 import type { ChatRequestMessage } from "@/chat/types";
@@ -41,6 +41,7 @@ export function validateChatRequest(body: unknown): ValidationResult {
     );
   }
 
+  // Assistant messages also come from the client and get their own limit.
   for (const message of messages) {
     const maxLength =
       message.role === "assistant"
@@ -54,7 +55,7 @@ export function validateChatRequest(body: unknown): ValidationResult {
     }
   }
 
-  // Rebuild objects so any extra client-sent fields are dropped.
+  // Only role and content are passed on; extra fields from the client are dropped.
   return {
     isValid: true,
     data: {

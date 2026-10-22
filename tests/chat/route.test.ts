@@ -1,5 +1,3 @@
-// Testy API (4): odpowiedzi 200, 400, 429 i 500, nagłówki, komunikaty oraz logowanie błędów.
-
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { POST } from "@/app/api/chat/route";
@@ -49,7 +47,6 @@ beforeEach(() => {
 });
 
 describe("POST /api/chat", () => {
-  // Sprawdza przekazanie wiadomości i odpowiedzi serwisu, aby poprawne żądanie zwracało strumień w uzgodnionym formacie.
   it("returns the service stream with status 200 and the NDJSON content type", async () => {
     const body =
       JSON.stringify({ type: "text", content: "I use React." }) + "\n";
@@ -73,7 +70,7 @@ describe("POST /api/chat", () => {
     expect(mocks.logErrorEvent).not.toHaveBeenCalled();
   });
 
-  // Sprawdza użycie prawdziwego walidatora, aby błędne wiadomości kończyły się 400 bez uruchamiania generowania.
+  // Uses the real validator, not a mock.
   it("rejects invalid messages with status 400 before starting generation", async () => {
     const response = await POST(createRequest({ messages: [] }));
     const body = await response.json();
@@ -87,7 +84,6 @@ describe("POST /api/chat", () => {
     });
   });
 
-  // Sprawdza respektowanie blokady limitera i Retry-After, aby wyczerpany limit zatrzymywał żądanie przed generowaniem.
   it("returns status 429 and Retry-After when the IP limit is exhausted", async () => {
     mocks.checkRateLimit.mockReturnValue({ success: false, resetSeconds: 90 });
 
@@ -105,7 +101,7 @@ describe("POST /api/chat", () => {
     });
   });
 
-  // Sprawdza ukrycie szczegółów awarii i wywołania loggera, aby błąd przygotowania odpowiedzi nie ujawniał danych serwera.
+  // Internal error details must not leak to the client.
   it("returns a generic 500 response while logging the setup failure", async () => {
     const failure = new Error("Cannot load knowledge from /private/test-data");
     mocks.createChatStream.mockRejectedValue(failure);

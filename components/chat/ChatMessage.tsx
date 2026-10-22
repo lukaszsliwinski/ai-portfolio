@@ -1,4 +1,3 @@
-// Renderuje wiadomość użytkownika lub asystenta, bezpiecznie obsługując podstawowe formatowanie Markdown.
 import React from "react";
 import AssistantAvatar from "./AssistantAvatar";
 import type { ChatUiMessage } from "@/chat/types";
@@ -8,9 +7,8 @@ interface ChatMessageProps {
   message: ChatUiMessage;
 }
 
-/**
- * Safely parses **bold** into React elements without using dangerouslySetInnerHTML.
- */
+// Builds React elements instead of injecting the model's output as HTML,
+// so there is nothing to sanitize.
 function parseBoldFormatting(text: string): React.ReactNode[] {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, index) => {
@@ -25,9 +23,7 @@ function parseBoldFormatting(text: string): React.ReactNode[] {
   });
 }
 
-/**
- * Safely renders paragraphs, bold text and simple bullet lists.
- */
+// Supports only what the system prompt allows: paragraphs, bold and "-" lists.
 function FormattedContent({ content }: { content: string }) {
   const lines = content.split("\n");
 
@@ -36,7 +32,6 @@ function FormattedContent({ content }: { content: string }) {
       {lines.map((line, lineIndex) => {
         const trimmed = line.trim();
 
-        // Bullet point list item
         if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
           return (
             <div key={lineIndex} className="flex items-start gap-2 pl-1">
@@ -46,12 +41,10 @@ function FormattedContent({ content }: { content: string }) {
           );
         }
 
-        // Empty line -> vertical space
         if (trimmed === "") {
           return <div key={lineIndex} className="h-1" />;
         }
 
-        // Standard text paragraph
         return <p key={lineIndex}>{parseBoldFormatting(line)}</p>;
       })}
     </div>

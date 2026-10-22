@@ -1,6 +1,5 @@
 "use client";
 
-// Renderuje sekcję powitalną portfolio z opisem, technologiami i odnośnikami do dalszych części strony.
 import Image from "next/image";
 import { motion } from "motion/react";
 import { faLaptopCode } from "@fortawesome/free-solid-svg-icons";
@@ -54,7 +53,7 @@ export default function Landing() {
               {TECHNOLOGIES.map((tech) => (
                 <motion.div key={tech.name} variants={childVariants}>
                   <TechBadge src={tech.src} name={tech.name} />
-                </motion.div>            
+                </motion.div>
               ))}
             </StaggerReveal>
           </div>
@@ -67,7 +66,10 @@ export default function Landing() {
             width={250}
             height={250}
           />
-          <StaggerReveal delay={1.2} className="flex flex-wrap justify-center gap-2">
+          <StaggerReveal
+            delay={1.2}
+            className="flex flex-wrap justify-center gap-2"
+          >
             <motion.div variants={childVariants}>
               <ButtonAnchor
                 href="#chat"

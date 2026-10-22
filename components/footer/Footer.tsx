@@ -1,4 +1,3 @@
-// Renderuje stopkę portfolio z automatycznie aktualizowanym zakresem lat.
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const yearDisplay = currentYear > 2026 ? `2026-${currentYear}` : "2026";

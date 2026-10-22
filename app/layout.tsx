@@ -8,7 +8,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  // title: "Łukasz Śliwiński | Frontend Developer Portfolio",
+  title: "Łukasz Śliwiński | Portfolio",
   description:
     "Explore my professional frontend developer portfolio, projects, and experience. Chat with my interactive AI assistant built on Next.js 16.",
 };

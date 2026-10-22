@@ -1,6 +1,5 @@
 "use client";
 
-// Zarządza stanem rozmowy, komunikacją strumieniową z API oraz składa główną sekcję chatu.
 import { useState, useRef } from "react";
 
 import ChatWindow from "./ChatWindow";
@@ -34,10 +33,13 @@ export default function ChatSection({
   const [messages, setMessages] = useState<ChatUiMessage[]>([
     DEFAULT_WELCOME_MESSAGE,
   ]);
+  // isThinking covers the wait for the first chunk;
+  // isSending locks the input until the reply is complete.
   const [isThinking, setIsThinking] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // The ref blocks a double send immediately, before React re-renders.
   const isSendingRef = useRef(false);
 
   const handleSendMessage = async (content: string) => {
@@ -46,13 +48,12 @@ export default function ChatSection({
     isSendingRef.current = true;
     setIsSending(true);
 
-    // Optimistically add the user message and clear previous error
     const userMessage = createMessage("user", message);
     setMessages((prev) => [...prev, userMessage]);
     setIsThinking(true);
     setError(null);
 
-    // Build history: exclude welcome message, cap at API limit
+    // The welcome message is UI only and never sent to the model.
     const history = [...messages, userMessage]
       .filter((m) => m.id !== "welcome-msg")
       .slice(-maxMessages)
@@ -67,7 +68,7 @@ export default function ChatSection({
         body: JSON.stringify({ messages: history }),
       });
 
-      // Non-2xx responses are JSON errors (validation, 503, etc.)
+      // Errors come back as JSON with an HTTP status, replies as a stream.
       if (!response.ok) {
         const data = await response.json();
         setError(
@@ -81,7 +82,6 @@ export default function ChatSection({
         return;
       }
 
-      // Add an empty assistant message and stream content into it
       const assistantMessage = createMessage("assistant", "");
       assistantMessageId = assistantMessage.id;
       setIsThinking(false);
@@ -89,6 +89,7 @@ export default function ChatSection({
 
       let receivedText = false;
       for await (const event of readChatStream(response.body)) {
+        // Drop only the partial reply, keeping it out of the next history.
         if (event.type === "error") {
           setError(event.message || "The AI assistant encountered an error.");
           setMessages((prev) =>

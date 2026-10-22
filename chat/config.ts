@@ -1,4 +1,3 @@
-// Limity aplikacji i odczyt zmiennych środowiskowych
 import "server-only";
 
 function env(name: string): string {
@@ -17,6 +16,8 @@ export const limits = {
   logRetentionDays: 90,
 } as const;
 
+// Read on demand rather than at import time,
+// so `next build` works without Gemini credentials.
 export function getModelConfig() {
   return {
     apiKey: env("GEMINI_API_KEY"),

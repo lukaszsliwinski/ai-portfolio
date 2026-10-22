@@ -1,4 +1,4 @@
-// Ogranicza liczbę żądań chatu dla adresu IP przy użyciu prostego magazynu danych w pamięci procesu.
+// Fixed-window rate limit per IP address.
 import { limits } from "@/chat/config";
 
 interface RateLimitEntry {
@@ -6,12 +6,10 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
+// Kept in memory: counters reset on restart and aren't shared between
+// instances, which is fine for a single container.
 const store = new Map<string, RateLimitEntry>();
 
-/**
- * Simple, high-performance in-memory Rate Limiter.
- * Window configured in hours (e.g. 1 for 1 hour, 0.5 for 30 minutes).
- */
 export function checkRateLimit(ip: string): {
   success: boolean;
   resetSeconds: number;
@@ -21,7 +19,7 @@ export function checkRateLimit(ip: string): {
   const now = Date.now();
   const entry = store.get(ip);
 
-  // Passive cleanup if storage grows large
+  // Expired entries are swept only when the map grows, to keep lookups cheap.
   if (store.size > 500) {
     for (const [key, value] of store.entries()) {
       if (now > value.resetTime) store.delete(key);

@@ -1,4 +1,3 @@
-// Wyświetla listę sugerowanych pytań i przekazuje wybrane pytanie do mechanizmu wysyłania wiadomości.
 import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "motion/react";
 import FaWrapper from "@/components/ui/FaWrapper";
@@ -31,10 +30,14 @@ export default function SuggestedQuestions({
             href="#chat-window"
             aria-disabled={isDisabled}
             onClick={(e) => {
+              // aria-disabled doesn't disable a link,
+              // so the jump to #chat-window is cancelled here.
               if (isDisabled) {
                 e.preventDefault();
                 return;
               }
+              // On large screens the chat sits next to the questions,
+              // so there is no need to scroll.
               if (window.innerWidth >= 1024) e.preventDefault();
               onSelectQuestion(question);
             }}
