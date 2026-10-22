@@ -13,7 +13,7 @@ import {
   Scene,
   WebGLRenderer,
 } from "three";
-import Reveal from "@/components/ui/Reveal";
+import { motion } from "motion/react";
 
 // 3D background component with animated stars, rendered using Three.js
 // inspired by: https://www.youtube.com/watch?v=1qpeo5ewz_8
@@ -113,13 +113,17 @@ export default function Background() {
     };
   }, []);
 
+  // Tło jest zawsze w widoku, więc pojawia się po załadowaniu, a nie po przewinięciu.
+  // Przezroczystość na samym elemencie fixed nie wyciąga go nad treść strony,
+  // a pointer-events-none gwarantuje, że tło nigdy nie przechwyci kliknięć.
   return (
-    <Reveal variant="fade">
-      <div
-        ref={bgRef}
-        className="fixed top-0 left-0 -z-10 h-screen w-screen overflow-hidden"
-        id="site-background"
-      ></div>
-    </Reveal>
+    <motion.div
+      ref={bgRef}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="pointer-events-none fixed top-0 left-0 -z-10 h-screen w-screen overflow-hidden"
+      id="site-background"
+    />
   );
 }
