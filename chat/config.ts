@@ -1,4 +1,4 @@
-// Przechowuje limity chatu i odczytuje konfigurację modelu dopiero przy wywołaniu.
+// Limity aplikacji i odczyt zmiennych środowiskowych
 import "server-only";
 
 function env(name: string): string {
@@ -14,6 +14,7 @@ export const limits = {
   maxAssistantMessageLength: 5000,
   maxAssistantOutputTokens: 800,
   maxMessages: 10,
+  logRetentionDays: 90,
 } as const;
 
 export function getModelConfig() {
