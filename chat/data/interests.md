@@ -1,13 +1,10 @@
-<!-- PLACEHOLDER: Replace with your real interests before publishing. -->
-# Professional & Personal Interests
+# Zainteresowania
 
-## Professional Interests
-- **Web Performance & Optimization:** I enjoy dissecting bundle sizes, optimizing render cycles, and achieving a 100/100 score on Google Lighthouse.
-- **Developer Experience (DX):** Streamlining local development workflows, writing custom scripts, and setting up CI/CD pipelines.
-- **Generative AI & LLMs:** Exploring how AI can assist developers and enhance user interfaces (such as building this chatbot).
-- **Design Systems:** Creating structured, consistent, and reusable UI components.
+## Zainteresowania zawodowe
+- **Analiza danych i machine learning:** obszar, którego aktywnie uczę się w Pythonie, poza pracą w web developmencie.
+- **AI w tworzeniu oprogramowania:** zarówno korzystanie z narzędzi AI, żeby szybciej budować oprogramowanie, jak i tworzenie produktów opartych na modelach językowych, takich jak ten asystent.
 
-## Personal Interests
-- **Photography:** Capturing urban landscapes and street photography.
-- **Reading:** Science fiction novels and non-fiction books on technology and psychology.
-- **Hiking:** Exploring national parks and mountain trails.
+## Zainteresowania prywatne
+- Gra na instrumentach (gitara, syntezator) oraz produkcja muzyki
+- Trekking górski
+- Gotowanie

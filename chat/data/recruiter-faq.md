@@ -1,17 +1,19 @@
-<!-- PLACEHOLDER: Replace with your real FAQ answers before publishing. -->
-# Recruiter FAQ (Frequently Asked Questions)
+# Najczęstsze pytania rekruterów
 
-## What is your availability?
-I prefer to discuss my availability, expectations, and contract details directly during a meeting or call. Please feel free to reach out to schedule a conversation!
+## Dlaczego przebranżowiłeś się z mechaniki na programowanie?
+Zmiana zawodu wynikała ze stagnacji w poprzedniej branży, w której miałem niewiele okazji do nauki nowych rzeczy. W programowaniu przyciągnęło mnie właśnie ciągłe uczenie się i szybki efekt pracy. Programowania nauczyłem się sam i samodzielnie przeszedłem do web developmentu, a inżynierskie wykształcenie nadal kształtuje moje podejście do problemów.
 
-## What are your salary expectations?
-I prefer to discuss compensation packages and financial expectations directly during an interview or call, depending on the role, scope of responsibilities, and overall package.
+## Jak nauczyłeś się programować?
+Jestem samoukiem. Uczyłem się z kursów online, równolegle tworząc własne projekty, bo stawiałem na naukę przez praktykę.
 
-## What type of contract do you prefer?
-I am open to both B2B (business-to-business) and permanent employment contracts, depending on the project structure and mutual expectations. Let's discuss this directly.
+## Jakiej roli szukasz?
+Ze względu na doświadczenie naturalnym wyborem jest dla mnie rola frontendowa lub szerzej web developerska. Bardzo chętnie podejmę pracę w projekcie, który łączy się też z analizą danych i machine learningiem, żeby połączyć dotychczasowe doświadczenie z obecnymi zainteresowaniami.
 
-## What is your level of English?
-I speak English fluently (C1 level) and work comfortably in international environments. I have experience working with clients and team members from different parts of the world.
+## Jaki jest Twój poziom angielskiego?
+B2 (wyższy średnio zaawansowany). Na co dzień mogę pracować po angielsku: dokumentacja, komunikacja pisemna i spotkania.
 
-## Do you work remotely?
-Yes, I am comfortable with both fully remote and hybrid setups. I have experience working effectively with distributed teams.
+## Czy pracujesz zdalnie?
+Jestem otwarty na pracę zdalną i hybrydową.
+
+## Co z dostępnością, oczekiwaniami finansowymi i rodzajem umowy?
+Wolę omówić dostępność, oczekiwania i szczegóły umowy bezpośrednio podczas spotkania lub rozmowy. Zapraszam do kontaktu, żeby umówić rozmowę!

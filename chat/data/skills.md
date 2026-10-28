@@ -1,18 +1,26 @@
-<!-- PLACEHOLDER: Replace with your real skills before publishing. -->
-# Developer Skills
+# Umiejętności
 
-## Core Frontend Technologies
-- **Languages:** JavaScript (ES6+), TypeScript, HTML5, CSS3, Sass
-- **Frameworks & Libraries:** React (v18 & v19), Next.js (App Router & Pages Router), Redux Toolkit, Context API, Zustand
-- **Styling:** CSS Modules, Tailwind CSS (v3 & v4), Styled Components, PostCSS
+## Frontend
+- **Języki:** TypeScript, JavaScript, HTML
+- **Frameworki i biblioteki:** React, Next.js, jQuery
+- **Stylowanie i animacje:** CSS, Tailwind CSS, Motion, Three.js
 
-## Tooling & Workflow
-- **Build Tools:** Webpack, Vite, Turbopack
-- **Version Control:** Git, GitHub, GitLab
-- **Testing:** Jest, React Testing Library, Cypress, Playwright
-- **Linters & Formatters:** ESLint, Prettier
+## Backend i bazy danych
+- **Backend:** Node.js, PHP, REST API
+- **Bazy danych:** MySQL, MongoDB
+- **Python:** skrypty, a obecnie analiza danych i machine learning (więcej niżej)
 
-## Backend & Integration
-- **API Protocols:** RESTful APIs, GraphQL, WebSockets
-- **Serverless & Hosting:** Vercel, Netlify, AWS (S3, CloudFront), Docker, Traefik
-- **CMS:** Headless WordPress, Strapi, Sanity.io
+## Narzędzia i infrastruktura
+- **Praca z kodem:** Git, GitHub, Prettier
+- **Testy:** Vitest
+- **Wdrożenia:** Docker, Traefik, serwer VPS z Linuxem
+
+## Jak używam AI w codziennej pracy
+- Korzystam z asystentów AI do kodu powtarzalnego, refaktoryzacji, pisania testów, wyjaśniania nieznanego kodu i omawiania wariantów rozwiązań.
+- Używam AI do nauki nowych rzeczy i zrozumienia technologii, z którymi wcześniej nie miałem styczności.
+- Rozwiązania dostarczone przez AI przeglądam przed wdrożeniem i nie commituję kodu przed zrozumieniem jego działania.
+
+
+## Czego się teraz uczę
+- **Python, analiza danych i machine learning:** uczę się ich po godzinach, równolegle z rozwojem w web developmencie.
+- **Efektywna praca z agentami kodowania AI:** jak planować dla nich zadania, przeglądać ich wyniki i zachować kontrolę nad architekturą i bezpieczeństwem.

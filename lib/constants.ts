@@ -38,7 +38,7 @@ export const CHAT_PRIVACY_NOTE =
 
 export const SUGGESTED_QUESTIONS = [
   "What do you bring to a frontend team?",
-  "Which project are you most proud of?",
+  "Tell me about a project of your choice.",
   "What are you learning right now?",
   "How do you use AI in your daily work?",
 ];

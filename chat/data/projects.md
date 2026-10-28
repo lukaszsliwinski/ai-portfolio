@@ -1,20 +1,23 @@
-<!-- PLACEHOLDER: Replace with your real projects before publishing. -->
-# Completed Projects
+# Projekty
 
-## E-Commerce Platform Redesign
-*TechSolutions Inc. | Lead Developer*
-- **Description:** A complete rewrite and redesign of a B2C e-commerce platform with a focus on web performance and user experience.
-- **Stack:** Next.js (App Router), React, Tailwind CSS, Stripe API, GraphQL.
-- **Key Outcomes:** Achieved sub-second page loads, reduced bounce rate by 22%, and increased conversions by 8%.
+## Asystent AI portfolio (ta strona) - główny projekt pokazowy
+- **Co to jest:** asystent czatu w moim portfolio, który odpowiada na pytania rekruterów w moim imieniu, wyłącznie na podstawie przygotowanych przeze mnie materiałów.
+- **Dlaczego go zbudowałem:**
+  - żeby połączyć doświadczenie zawodowe w web developmencie z zainteresowaniem tworzeniem narzędzi AI,
+  - żeby nauczyć się pracy z agentem kodowania AI przy projekcie tworzonym od podstaw oraz poznać ograniczenia i zagrożenia takiego sposobu pracy.
+- **Co zrobiłem:** samodzielnie zbudowałem i wdrożyłem cały produkt, używając agenta kodowania AI jako narzędzia:
+  - frontend w Next.js, React, TypeScript i Tailwind CSS, z animacjami Motion i tłem w Three.js,
+  - integracja z Google Gemini po stronie serwera, z odpowiedziami przesyłanymi strumieniowo,
+  - walidacja żądań, limit wiadomości na adres IP i reguły w prompcie systemowym chroniące przed prompt injection,
+  - logi z automatycznym usuwaniem po 90 dniach oraz polityka prywatności,
+  - testy jednostkowe w Vitest,
+  - wdrożenie w Dockerze na własnym serwerze VPS, za Traefikiem z HTTPS.
 
-## Custom UI Design System
-*TechSolutions Inc. | Co-creator*
-- **Description:** Built a reusable, accessible, and themeable UI library for company-wide web projects.
-- **Stack:** React, TypeScript, Tailwind CSS, Storybook, Radix UI.
-- **Key Outcomes:** Accelerated product development by 30% across multiple teams.
+<!-- TODO: czego się nauczyłem? -->
+<!-- TODO: projekty własne, projekty zawodowe (priorytet) -->
 
-## Real-Time Collaboration Board
-*CreativeWeb Studios | Sole Developer*
-- **Description:** An interactive dashboard allowing multiple users to draw, add notes, and collaborate in real-time.
-- **Stack:** React, Vite, Node.js, Express, Socket.io, TypeScript.
-- **Key Outcomes:** Handled up to 200 concurrent users per board with minimal latency.
+## [nazwa projektu]
+- **Co to jest:** [krótki opis]
+- **Moja rola:** [za co odpowiadałem]
+- **Technologie:** [stack]
+- **Efekt:** [rezultat albo czego się nauczyłem]
