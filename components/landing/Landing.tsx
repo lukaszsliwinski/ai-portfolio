@@ -37,7 +37,7 @@ export default function Landing() {
         <Reveal className="flex max-w-xl flex-1 flex-col gap-6">
           <Image
             className="mx-auto lg:hidden"
-            src="/images/main.png"
+            src="/images/main.webp"
             alt="bio photo"
             width={200}
             height={200}
@@ -61,7 +61,7 @@ export default function Landing() {
         <Reveal className="flex max-w-xl flex-1 flex-col items-center justify-center gap-10">
           <Image
             className="max-lg:hidden"
-            src="/images/main.png"
+            src="/images/main.webp"
             alt="bio photo"
             width={250}
             height={250}
